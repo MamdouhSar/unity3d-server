@@ -1,0 +1,25 @@
+{
+  "name": "unity3d-server",
+  "version": "1.0.0",
+  "description": "Unity3D Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MamdouhSar/unity3d-server.git"
+  },
+  "author": "MamdouhSar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MamdouhSar/unity3d-server/issues"
+  },
+  "homepage": "https://github.com/MamdouhSar/unity3d-server#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "parse": "^1.9.2",
+    "parse-server": "^2.3.2",
+    "socket.io": "^1.7.2"
+  }
+}
