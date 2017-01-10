@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/MamdouhSar/unity3d-server#readme",
   "dependencies": {
+    "cors": "^2.8.1",
     "express": "^4.14.0",
     "parse": "^1.9.2",
     "parse-server": "^2.3.2",
+    "path": "^0.12.7",
     "socket.io": "^1.7.2"
   }
 }
