@@ -2,7 +2,7 @@
  * Created by appleuser3 on 1/10/17.
  */
 var express = require('express');
-var path = requre('path');
+var path = require('path');
 var cors = require('cors');
 var ParseServer = require('parse-server').ParseServer;
 
