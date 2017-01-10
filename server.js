@@ -26,7 +26,7 @@ var api = new ParseServer({
 app.use('/parse', api);
 
 app.get('/', function(req, res) {
-    res.status(200).send('Server is running here');
+    res.status(200).send('404 Page not found');
 });
 
 var port = process.env.PORT || 1335;
