@@ -25,14 +25,10 @@ var api = new ParseServer({
 
 app.use('/parse', api);
 
-app.get('/', function(req, res) {
-    res.status(200).send('');
-});
-
 var port = process.env.PORT || 1335;
 
 var httpServer = require('http').createServer(app);
 httpServer.listen(port, function() {
-    console.log('Unity3D Server is running here');
+    console.log('Unity3D Server is running');
 });
 
