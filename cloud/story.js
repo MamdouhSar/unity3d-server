@@ -33,10 +33,11 @@ Parse.Cloud.define('getStories', function(request, response) {
             var stories = [];
             async.each(result, function(singleStory, storyCallback) {
                 stories.push({
-                    'addedById': result.get('addedBy').id,
-                    'addedByName': result.get('addedBy').get('username'),
-                    'content': result.get('content')
+                    'addedById': singleStory.get('addedBy').id,
+                    'addedByName': singleStory.get('addedBy').get('username'),
+                    'content': singleStory.get('content')
                 });
+                storyCallback();
             },
             function(error) {
                 if(error) {
