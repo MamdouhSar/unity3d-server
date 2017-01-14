@@ -11,6 +11,8 @@ var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 var app = express();
 app.use(cors());
 
+var httpServer = require('http').createServer(app);
+
 var api = new ParseServer({
   databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
@@ -27,7 +29,6 @@ app.use('/parse', api);
 
 var port = process.env.PORT || 1335;
 
-var httpServer = require('http').createServer(app);
 httpServer.listen(port, function() {
     console.log('Unity3D Server is running');
 });
