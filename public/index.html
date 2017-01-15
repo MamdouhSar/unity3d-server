@@ -13,6 +13,10 @@
       #messages li:nth-child(odd) { background: #eee; }
     </style>
   </head>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js'></script>
+  <script>
+    var socket = io();
+  </script>
   <body>
     <ul id="messages"></ul>
     <form action="">

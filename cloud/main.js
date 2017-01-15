@@ -3,3 +3,6 @@
  */
 require('./story.js');
 require('./friends.js');
+require('./conversation.js');
+require('./message.js');
+require('./authentication.js');

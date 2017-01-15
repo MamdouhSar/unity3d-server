@@ -5,6 +5,7 @@ var express = require('express');
 var path = require('path');
 var cors = require('cors');
 var ParseServer = require('parse-server').ParseServer;
+var Parse = require('parse/node');
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
@@ -15,19 +16,35 @@ var httpServer = require('http').createServer(app);
 var io = require('socket.io')(httpServer);
 
 var api = new ParseServer({
-  databaseURI: databaseUri || 'mongodb://localhost:27017/devUnity',
+  databaseURI: databaseUri || 'mongodb://heroku_d7sm06pf:cak0b4unnjhnoouompb4gcm6tp@ds159348.mlab.com:59348/heroku_d7sm06pf',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-  appId: process.env.APP_ID || 'myAppId',
-  masterKey: process.env.MASTER_KEY || '',
-  serverURL: process.env.SERVER_URL || 'http://localhost:1335/parse',
-  javascriptKey: process.env.JAVASCRIPT_KEY || '',
-  restAPIKey: process.env.REST_API_KEY || '',
-  dotNetKey: process.env.DOT_NET_KEY || '',
-  clientKey: process.env.CLIENT_KEY || ''
+  appId: process.env.APP_ID || 'Unity3DServer',
+  masterKey: process.env.MASTER_KEY || 'xJQ8tCI73N',
+  serverURL: process.env.SERVER_URL || 'https://localhost:1335/parse',
+  javascriptKey: process.env.JAVASCRIPT_KEY || '2lKrCoZVRA',
+  restAPIKey: process.env.REST_API_KEY || 'uaiF2yCMnB',
+  dotNetKey: process.env.DOT_NET_KEY || 'b6YhWaaebP',
+  clientKey: process.env.CLIENT_KEY || '5pk333og1c'
 });
 
 io.on('connection', function(socket){
   console.log('a user connected');
+
+  socket.on('subscribe', function(room) {
+    console.log('joining room ', room);
+    socket.join(room);
+  });
+
+  socket.on('send message', function(data) {
+      console.log('sending room post ', data.room);
+      socket.broadcast.to(data.room).emit('conversation private post', {
+          message: data.message
+      });
+  });
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
 });
 
 app.use('/parse', api);
