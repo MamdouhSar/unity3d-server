@@ -45,3 +45,18 @@ Parse.Cloud.define('logIn', function(request, response) {
         }
     );
 });
+
+Parse.Cloud.define('logOut', function(request, response) {
+    var user = request.user;
+    user.logOut().then(
+        function(result) {
+            response.success({
+                'result': 'LOGGED OUT',
+                'user': result
+            })
+        },
+        function(error) {
+            response.error(error);
+        }
+    );
+});
