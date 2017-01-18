@@ -14,10 +14,20 @@ Parse.Cloud.define('signUp', function(request, response) {
     newUser.set('password', userObject.password);
     newUser.signUp().then(
         function(user) {
-            response.success({
-                'result': 'SIGNED UP',
-                'user': user
-            });
+            Parse.User.logIn(userObject.username, userObject.password).then(
+                function() {
+                    response.success({
+                        'result': 'SIGNED UP',
+                        'user': user
+                    });
+                },
+                function(error) {
+                    response.success({
+                        'result': 'ERROR',
+                        'message' : error.message
+                    });
+                }
+            );
         },
         function(error) {
             response.success({
