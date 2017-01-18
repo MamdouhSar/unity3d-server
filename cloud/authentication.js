@@ -20,7 +20,7 @@ Parse.Cloud.define('signUp', function(request, response) {
             });
         },
         function(error) {
-            response.error({
+            response.success({
                 'result': 'ERROR',
                 'message' : error.message
             });
@@ -41,7 +41,10 @@ Parse.Cloud.define('logIn', function(request, response) {
             });
         },
         function(error) {
-            response.error(error);
+            response.success({
+                'result':'ERROR',
+                'message':error.message
+            });
         }
     );
 });
@@ -56,7 +59,10 @@ Parse.Cloud.define('logOut', function(request, response) {
             })
         },
         function(error) {
-            response.error(error);
+            response.success({
+                'result':'ERROR',
+                'message':error.message
+            });
         }
     );
 });
