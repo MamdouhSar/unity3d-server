@@ -49,3 +49,4 @@ _To check the current user you can see_ `ParseUser.CurrentUser`
 ####logOut:
 This function does not need parameters, it will change the current user to `null`;
  hence logging the user out. if no user is already logged in, it will return an error.
+
