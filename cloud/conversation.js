@@ -19,24 +19,31 @@ Parse.Cloud.define('initConversation', function(request, response) {
                 newConversation.save().then(
                     function(result) {
                         response.success({
-                            'Result': result,
-                            'Message': 'Conversation initiated'
+                            'conversation': result,
+                            'conversationId': result.id,
+                            'result': 'Conversation initiated'
                         })
                     },
                     function(error) {
-                        response.error(error);
+                        response.success({
+                            'result':'ERROR',
+                            'message': error.message
+                        });
                     }
                 );
             } else {
                 response.success({
-                    'Result': result[0],
-                    'ConversationID': result[0].id,
-                    'Message': 'Conversation is already initiated'
+                    'conversation': result[0],
+                    'conversationId': result[0].id,
+                    'result': 'Conversation is already initiated'
                 })
             }
         },
         function(error) {
-            response.error(error);
+            response.error({
+                'result':'ERROR',
+                'message': error.message
+            });
         }
     );
 });

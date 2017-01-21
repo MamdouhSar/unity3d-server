@@ -12,12 +12,15 @@ Parse.Cloud.define('addStory', function(request, response) {
     storyObject.save().then(
         function(result) {
             response.success({
-                'Result': result,
-                'Message': 'Story saved'
+                'result': 'Story Saved',
+                'story': result
             });
         },
         function(error) {
-            response.error(error);
+            response.success({
+                'result': 'ERROR',
+                'message': error.message
+            });
         }
     )
 });
@@ -41,10 +44,15 @@ Parse.Cloud.define('getStories', function(request, response) {
             },
             function(error) {
                 if(error) {
-                    response.error(error);
+                    response.success({
+                        'result': 'ERROR',
+                        'message': error
+                    });
                 }
                 else {
-                    response.success(stories);
+                    response.success({
+                        'result': stories
+                    });
                 }
             })
         },
