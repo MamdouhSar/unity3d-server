@@ -19,34 +19,60 @@ ParseCloud.CallFunctionAsync<float>("averageStars", dictionary).ContinueWith(t =
 where `averageStars` is the name of the cloud code function,
 and `dictionary` is the object with the needed parameters for that function
 
+### User Authentication
+Using the Parse's Unity3D SDK for authenticating users.
+
+####SignUp
+```
+var user = new ParseUser()
+{
+    Username = "my name",
+    Password = "my pass",
+    Email = "email@example.com"
+};
+
+// other fields can be set just like with ParseObject
+user["phone"] = "415-392-0202";
+
+Task signUpTask = user.SignUpAsync();
+```
+####Login
+```
+ParseUser.LogInAsync("myname", "mypass").ContinueWith(t =>
+{
+    if (t.IsFaulted || t.IsCanceled)
+    {
+        // The login failed. Check the error to see why.
+    }
+    else
+    {
+        // Login was successful.
+    }
+})
+```
+####Logout
+```
+ParseUser.LogOut();
+```
+####Check Current User
+```
+if (ParseUser.CurrentUser != null)
+{
+    // do stuff with the user
+}
+else
+{
+    // show the signup or login screen
+}
+```
+
 ### Cloud Functions
 Cloud code function available:
-* signUp
-* logIn
-* logOut
-* addFriend
+* requestFriend
+* acceptFriend
 * getAllFriends
 * addStory
 * getStories
-
-####signUp:
-The needed parameters are:
-* username
-* email
-* password
-
-If the function was successful, it will return the object of the user created.
-
-####logIn:
-The needed parameters are:
-* username
-* password
-
-If the function is successful, it will change the current user to the one that has logged in.
-
-_To check the current user you can see_ `ParseUser.CurrentUser`
-
-####logOut:
-This function does not need parameters, it will change the current user to `null`;
- hence logging the user out. if no user is already logged in, it will return an error.
+* initConversation
+* saveMessage
 
