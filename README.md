@@ -88,7 +88,7 @@ This function takes the user id that is requested to be added as a friend.
             If the request is successful the result should be as follows:
             {
                 'result': 'Request Sent',
-                'request': result // Where result is the FriendRequest object
+                'request': result //Where result is the FriendRequest object
             }
         */
     });
@@ -141,7 +141,45 @@ This function does not need any parameters.
         /* 
             If the request is successful the result should be as follows:
             {
-                'result': friendRequests //array of user not accepted friend requests as FriendRequest Objects
+                'result': friendRequests //Array of user not accepted friend requests as FriendRequest Objects
+            }
+        */
+    });
+```
+###Story Cloud Code
+there are two functions related to the stories of the user.
+####addStory
+This function receives the content of the story as a parameter.
+```
+    IDictionary<string, object> dictionary = new Dictionary<string, object>
+    {
+        { "content", content }
+    };
+    
+    ParseCloud.CallFunctionAsync<string>("addStory", dictionary).ContinueWith(t =>
+    {
+        var result = t.Result;
+        Debug.Log(result);
+        /* 
+            If the request is successful the result should be as follows:
+            {
+                'result': 'Story Saved',
+                'story': result //Story Object of the saved story
+            }
+        */
+    });
+```
+####getStories
+This function does not need any parameters.
+```
+    ParseCloud.CallFunctionAsync<string>("getStories").ContinueWith(t =>
+    {
+        var result = t.Result;
+        Debug.Log(result);
+        /* 
+            If the request is successful the result should be as follows:
+            {
+                'result': stories //Array of objects with the ID, the content, and the username of the user that added that story
             }
         */
     });
