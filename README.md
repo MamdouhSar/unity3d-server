@@ -1,9 +1,7 @@
 # Unity3D-Server
 Unity3d Server built with NodeJS using express, parse server and socket.io.
-
 ## User Authentication
 Using the Parse's Unity3D SDK for authenticating users.
-
 ###SignUp
 ```
     var user = new ParseUser()
@@ -13,7 +11,7 @@ Using the Parse's Unity3D SDK for authenticating users.
         Email = "email@example.com"
     };
     
-    // other fields can be set just like with ParseObject
+    //Other fields can be set just like with ParseObject
     user["phone"] = "415-392-0202";
     
     Task signUpTask = user.SignUpAsync();
@@ -24,11 +22,11 @@ Using the Parse's Unity3D SDK for authenticating users.
     {
         if (t.IsFaulted || t.IsCanceled)
         {
-            // The login failed. Check the error to see why.
+            //The login failed. Check the error to see why.
         }
         else
         {
-            // Login was successful.
+            //Login was successful.
         }
     })
 ```
@@ -40,11 +38,11 @@ Using the Parse's Unity3D SDK for authenticating users.
 ```
     if (ParseUser.CurrentUser != null)
     {
-        // do stuff with the user
+        //Do stuff with the user
     }
     else
     {
-        // show the signup or login screen
+        //Show the signup or login screen
     }
 ```
 ###Facebook Login
@@ -62,7 +60,7 @@ Cloud code functions are considered as the server API to get specific data. It c
     
     ParseCloud.CallFunctionAsync<float>("averageStars", dictionary).ContinueWith(t => {
         var result = t.Result;
-        // result is 4.5
+        //Result is 4.5
     });
 ```
 
@@ -147,7 +145,7 @@ This function does not need any parameters.
     });
 ```
 ###Story Cloud Code
-there are two functions related to the stories of the user.
+There are two functions related to the stories of the user.
 ####addStory
 This function receives the content of the story as a parameter.
 ```
@@ -184,3 +182,28 @@ This function does not need any parameters.
         */
     });
 ```
+###Conversation Cloud Code
+There are one function related to the conversation of the user.
+####initConversation
+This function is used to initialized the conversation between two users. It needs the id of the user the message is sent to.
+```
+    IDictionary<string, object> dictionary = new Dictionary<string, object>
+    {
+        { "toId", toId }
+    };
+    
+    ParseCloud.CallFunctionAsync<string>("initConversation", dictionary).ContinueWith(t =>
+    {
+        var result = t.Result;
+        Debug.Log(result);
+        /* 
+            If the request is successful the result should be as follows:
+            {
+                'conversation': result,//The object of the conversation
+                'conversationId': result.id,//The id of the conversation
+                'result': 'Conversation initiated' OR 'Conversation is already initiated'
+            }
+        */
+    });
+```
+This function is used to send the conversation ID to the socket.io so that it initialize a private web socket between the two users.
