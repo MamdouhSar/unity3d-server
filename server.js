@@ -16,15 +16,15 @@ app.use(cors());
 
 //-------------------------Configuring Parse Server
 var api = new ParseServer({
-  databaseURI: databaseUri || 'mongodb://heroku_d7sm06pf:cak0b4unnjhnoouompb4gcm6tp@ds159348.mlab.com:59348/heroku_d7sm06pf',
-  cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-  appId: process.env.APP_ID || 'Unity3DServer',
-  masterKey: process.env.MASTER_KEY || 'xJQ8tCI73N',
-  serverURL: process.env.SERVER_URL || 'https://localhost:1335/parse',
-  javascriptKey: process.env.JAVASCRIPT_KEY || '2lKrCoZVRA',
-  restAPIKey: process.env.REST_API_KEY || 'uaiF2yCMnB',
-  dotNetKey: process.env.DOT_NET_KEY || 'b6YhWaaebP',
-  clientKey: process.env.CLIENT_KEY || '5pk333og1c'
+    databaseURI: databaseUri || 'mongodb://localhost:27107/devUnity',
+    cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
+    appId: process.env.APP_ID || 'MyAppId',
+    masterKey: process.env.MASTER_KEY || 'masterKey',
+    serverURL: process.env.SERVER_URL || 'https://localhost:1335/parse',
+    javascriptKey: process.env.JAVASCRIPT_KEY || '',
+    restAPIKey: process.env.REST_API_KEY || '',
+    dotNetKey: process.env.DOT_NET_KEY || '',
+    clientKey: process.env.CLIENT_KEY || ''
 });
 
 app.use('/parse', api);
@@ -80,24 +80,25 @@ app.get('/login/facebook/return',
 var io = require('socket.io')(httpServer);
 
 io.on('connection', function(socket){
-  console.log('user connected');
-  /*socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-  });*/
-  socket.on('subscribe', function(conversation) {
-    console.log('joining room ', conversation);
-    socket.join(conversation);
-  });
+    console.log('user connected');
+    /*socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
+        io.emit('chat message', msg);
+    });*/
 
-  socket.on('send message', function(data) {
-      console.log('sending conversation post ', data.conversation);
-      socket.broadcast.to(data.conversation).emit('conversation private post', {
-          message: data.message
-      });
-  });
+    socket.on('subscribe', function(conversation) {
+        console.log('joining room ', conversation);
+        socket.join(conversation);
+    });
 
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
+    socket.on('send message', function(data) {
+        console.log('sending conversation post ', data.conversation);
+        socket.broadcast.to(data.conversation).emit('conversation private post', {
+            message: data.message
+        });
+    });
+
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+    });
 });

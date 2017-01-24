@@ -107,3 +107,38 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
         }
     });
 });
+
+Parse.Cloud.define('getFriendRequests', function(request, response) {
+    var user = request.user;
+    var requestQuery = new Parse.Query('FriendRequest');
+    requestQuery.equalTo('requestedTo', user);
+    requestQuery.equalTo('isAccepted', false);
+    requestQuery.include('requestedBy');
+    requestQuery.find().then(
+        function(requests) {
+            var friendRequests = [];
+            async.each(request, function(singleRequest, requestCallback) {
+                friendRequests.push(singleRequest.get('requestedBy'));
+                requestCallback();
+            },
+            function(error){
+                if(error) {
+                    response.success({
+                        'result': 'ERROR',
+                        'message': error
+                    });
+                } else {
+                    response.success({
+                        'result': friendRequests
+                    })
+                }
+            });
+        },
+        function(error) {
+            response.success({
+                'result': 'ERROR',
+                'message': error.message
+            })
+        }
+    );
+});
