@@ -207,3 +207,7 @@ This function is used to initialized the conversation between two users. It need
     });
 ```
 This function is used to send the conversation ID to the socket.io so that it initialize a private web socket between the two users.
+
+TODO:
+* Push Notification API
+* Socket.IO Test
