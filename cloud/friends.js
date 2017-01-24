@@ -89,8 +89,8 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
     async.each(friends, function(singleFriend, friendCallback) {
         responseFriends.push({
             'id': singleFriend.id,
-            'username': singleFriend.username,
-            'email': singleFriend.email
+            'username': singleFriend.get('username'),
+            'email': singleFriend.get('email')
         });
         friendCallback();
     },
