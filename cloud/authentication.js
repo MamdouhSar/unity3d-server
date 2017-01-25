@@ -87,16 +87,10 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                 Parse.Cloud.httpRequest({
                     url:'https://graph.facebook.com/me?fields=email,name&access_token='+userUpdated.get('authData').facebook.access_token,
                     success:function(httpResponse){
-                        userObject.setUsername(httpResponse.data.name);
-                        userObject.setEmail(httpResponse.data.email);
-                        userObject.save({useMasterKey : true}).then(
-                            function(saved) {
-                                response.success(JSON.stringify(saved))
-                            },
-                            function(error) {
-                                response.success(error.message);
-                            }
-                        );
+                        response.success({
+                            'username': httpResponse.data.name,
+                            'email': httpResponse.data.email
+                        });
                     },
                     error:function(httpResponse){
                         response.success(httpResponse);
