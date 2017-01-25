@@ -89,7 +89,7 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                     success:function(httpResponse){
                         userObject.setUsername(httpResponse.data.name);
                         userObject.setEmail(httpResponse.data.email);
-                        userObject.save().then(
+                        userObject.save({useMasterKey : true}).then(
                             function(saved) {
 
                             },
