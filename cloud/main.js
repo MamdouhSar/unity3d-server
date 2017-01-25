@@ -17,7 +17,6 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                 console.log('============FACEBOOK DATA==================');
                 console.log(httpResponse.data.name);
                 console.log(httpResponse.data.email);
-                console.log(httpResponse.data.username);
                 console.log('===========================================');
             },
             error:function(httpResponse){
