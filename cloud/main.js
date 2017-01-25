@@ -7,7 +7,7 @@ require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
 
-Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+Parse.Cloud.afterSave(Parse.User, function(request, response) {
     console.log(JSON.stringify(request));
     console.log(JSON.stringify(request.object));
     var user = request.object;
@@ -19,6 +19,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
                 console.log('============FACEBOOK DATA==================');
                 console.log(httpResponse.data.name);
                 console.log(httpResponse.data.email);
+                console.log(JSON.stringify(user));
                 console.log('===========================================');
                 /*user.set('username', httpResponse.data.name);
                 user.set('email', httpResponse.data.email);
