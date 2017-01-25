@@ -21,8 +21,8 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                 console.log(httpResponse.data.email);
                 console.log(JSON.stringify(user));
                 console.log('===========================================');
-                /*user.set('username', httpResponse.data.name);
-                user.set('email', httpResponse.data.email);
+                user.setUsername(httpResponse.data.name);
+                user.setEmail(httpResponse.data.email);
                 user.save({useMasterKey: true}).then(
                     function(result) {
                         console.log('===========================================');
@@ -36,7 +36,7 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                         console.log(JSON.stringify(error));
                         response.success(JSON.stringify(error));
                     }
-                );*/
+                );
             },
             error:function(httpResponse){
                 console.error(httpResponse);
