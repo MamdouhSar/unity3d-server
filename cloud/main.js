@@ -6,3 +6,23 @@ require('./friends.js');
 require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
+
+Parse.Cloud.afterSave(Parse.User, function(request, response) {
+    var user = request.object;
+    if (Parse.FacebookUtils.isLinked(user)) {
+        Parse.Cloud.httpRequest({
+            url:'https://graph.facebook.com/me?fields=email,name,username&access_token='+user.get('authData').facebook.access_token,
+            success:function(httpResponse){
+                console.log('===========================================');
+                console.log('============FACEBOOK DATA==================');
+                console.log(httpResponse.data.name);
+                console.log(httpResponse.data.email);
+                console.log(httpResponse.data.username);
+                console.log('===========================================');
+            },
+            error:function(httpResponse){
+                console.error(httpResponse);
+            }
+        });
+    }
+});
