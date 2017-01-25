@@ -11,7 +11,7 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
     var user = request.object;
     if (Parse.FacebookUtils.isLinked(user)) {
         Parse.Cloud.httpRequest({
-            url:'https://graph.facebook.com/me?fields=email,name,username&access_token='+user.get('authData').facebook.access_token,
+            url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
             success:function(httpResponse){
                 console.log('===========================================');
                 console.log('============FACEBOOK DATA==================');
