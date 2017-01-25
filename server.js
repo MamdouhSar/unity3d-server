@@ -26,6 +26,7 @@ var api = new ParseServer({
     dotNetKey: process.env.DOT_NET_KEY || '',
     clientKey: process.env.CLIENT_KEY || '',
     verbose: true,
+    facebookAppIds: [process.env.FACEBOOK_APP_ID],
     push: {
         android: {
             senderId: process.env.ANDROID_SENDER_ID || '',
