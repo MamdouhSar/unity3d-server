@@ -7,7 +7,7 @@ require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
 
-Parse.Cloud.afterSave(Parse.User, function(request, response) {
+/*Parse.Cloud.afterSave(Parse.User, function(request, response) {
     console.log(JSON.stringify(request));
     console.log(JSON.stringify(request.object));
     var user = request.object;
@@ -43,4 +43,4 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
             }
         });
     }
-});
+});*/

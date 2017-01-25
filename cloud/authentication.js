@@ -76,3 +76,39 @@ Parse.Cloud.define('logOut', function(request, response) {
         }
     );
 });
+
+Parse.Cloud.define('updateProfile', function(request, response) {
+    var user = request.user;
+    if (Parse.FacebookUtils.isLinked(user)) {
+        Parse.Cloud.httpRequest({
+            url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
+            success:function(httpResponse){
+                console.log('===========================================');
+                console.log('============FACEBOOK DATA==================');
+                console.log(httpResponse.data.name);
+                console.log(httpResponse.data.email);
+                console.log(JSON.stringify(user));
+                console.log('===========================================');
+                user.setUsername(httpResponse.data.name);
+                user.setEmail(httpResponse.data.email);
+                user.save({ sessionToken: user.get("sessionToken") }).then(
+                    function(result) {
+                        console.log('===========================================');
+                        console.log('============FACEBOOK DATA==================');
+                        console.log(httpResponse.data.name);
+                        console.log(httpResponse.data.email);
+                        console.log('===========================================');
+                        response.success(JSON.stringify(result));
+                    },
+                    function(error) {
+                        console.log(JSON.stringify(error));
+                        response.success(JSON.stringify(error));
+                    }
+                );
+            },
+            error:function(httpResponse){
+                console.error(httpResponse);
+            }
+        });
+    }
+});
