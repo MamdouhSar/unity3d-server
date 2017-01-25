@@ -7,7 +7,7 @@ require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
 
-Parse.Cloud.afterSave(Parse.User, function(request, response) {
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     var user = request.object;
     if (Parse.FacebookUtils.isLinked(user)) {
         Parse.Cloud.httpRequest({
@@ -22,11 +22,11 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                         console.log(httpResponse.data.name);
                         console.log(httpResponse.data.email);
                         console.log('===========================================');
-                        response.success(result);
+                        response.success(JSON.stringify(result));
                     },
                     function(error) {
-                        console.log(error.message);
-                        response.success(error);
+                        console.log(JSON.stringify(error));
+                        response.success(JSON.stringify(error));
                     }
                 );
             },
