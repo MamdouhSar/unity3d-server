@@ -79,15 +79,14 @@ Parse.Cloud.define('logOut', function(request, response) {
 
 Parse.Cloud.define('updateProfile', function(request, response) {
     var user = request.user;
-    if (Parse.FacebookUtils.isLinked(user)) {
+    if (Parse.FacebookUtils.isLinked(user) && !user.get('profileUpdated')) {
         Parse.Cloud.httpRequest({
             url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
             success:function(httpResponse){
                 user.setUsername(httpResponse.data.name);
                 user.setEmail(httpResponse.data.email);
-                console.log('============================');
-                console.log(JSON.stringify(user));
-                user.save({sessionToken: user.getSessionToken()}).then(
+                user.set('profileUpdated', true);
+                user.save({useMasterKey: true}).then(
                     function(result) {
                         console.log('===========================================');
                         console.log('============FACEBOOK DATA==================');
@@ -106,5 +105,7 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                 console.error(httpResponse);
             }
         });
+    }else {
+        response.success(user);
     }
 });
