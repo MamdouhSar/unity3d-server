@@ -23,7 +23,7 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                 console.log('===========================================');
                 user.setUsername(httpResponse.data.name);
                 user.setEmail(httpResponse.data.email);
-                user.save({sessionToken: user.getSessionToken()}).then(
+                user.save({lastLogin:new Date()}, { sessionToken: user.get("sessionToken") }).then(
                     function(result) {
                         console.log('===========================================');
                         console.log('============FACEBOOK DATA==================');
