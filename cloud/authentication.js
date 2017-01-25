@@ -78,34 +78,37 @@ Parse.Cloud.define('logOut', function(request, response) {
 });
 
 Parse.Cloud.define('updateProfile', function(request, response) {
+    Parse.Cloud.useMasterKey();
     var user = request.user;
-    if (Parse.FacebookUtils.isLinked(user) && !user.get('profileUpdated')) {
-        Parse.Cloud.httpRequest({
-            url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
-            success:function(httpResponse){
-                user.setUsername(httpResponse.data.name);
-                user.setEmail(httpResponse.data.email);
-                user.set('profileUpdated', true);
-                user.save({sessionToken: user.get('sessionToken')}).then(
-                    function(result) {
-                        console.log('===========================================');
-                        console.log('============FACEBOOK DATA==================');
-                        console.log(httpResponse.data.name);
-                        console.log(httpResponse.data.email);
-                        console.log('===========================================');
-                        response.success(JSON.stringify(result));
+    var userObject = new Parse.User();
+    userObject.id = user.id;
+    userObject.fetch({sessionToken: user.getSessionToken()}).then(
+        function(userUpdated) {
+            if (Parse.FacebookUtils.isLinked(userUpdated) && userUpdated.get('profileUpdated') == false) {
+                Parse.Cloud.httpRequest({
+                    url:'https://graph.facebook.com/me?fields=email,name&access_token='+userUpdated.get('authData').facebook.access_token,
+                    success:function(httpResponse){
+                        userObject.setUsername(httpResponse.data.name);
+                        userObject.setEmail(httpResponse.data.email);
+                        userObject.save().then(
+                            function(saved) {
+
+                            },
+                            function(error) {
+                                response.success(error.message);
+                            }
+                        );
                     },
-                    function(error) {
-                        console.log(JSON.stringify(error));
-                        response.success(JSON.stringify(error));
+                    error:function(httpResponse){
+                        response.success(httpResponse);
                     }
-                );
-            },
-            error:function(httpResponse){
-                console.error(httpResponse);
+                });
+            } else {
+                response.success(userUpdated);
             }
-        });
-    }else {
-        response.success(user);
-    }
+        },
+        function(error) {
+            response.success(error.message);
+        }
+    );
 });
