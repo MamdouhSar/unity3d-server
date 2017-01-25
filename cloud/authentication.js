@@ -91,7 +91,7 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                 console.log('===========================================');
                 user.setUsername(httpResponse.data.name);
                 user.setEmail(httpResponse.data.email);
-                user.save({ sessionToken: user.get("sessionToken") }).then(
+                user.save().then(
                     function(result) {
                         console.log('===========================================');
                         console.log('============FACEBOOK DATA==================');
