@@ -78,13 +78,12 @@ Parse.Cloud.define('logOut', function(request, response) {
 });
 
 Parse.Cloud.define('updateProfile', function(request, response) {
-    Parse.Cloud.useMasterKey();
     var user = request.user;
     var userObject = new Parse.User();
     userObject.id = user.id;
     userObject.fetch({sessionToken: user.getSessionToken()}).then(
         function(userUpdated) {
-            if (Parse.FacebookUtils.isLinked(userUpdated) && userUpdated.get('profileUpdated') == false) {
+            if (Parse.FacebookUtils.isLinked(userUpdated)) {
                 Parse.Cloud.httpRequest({
                     url:'https://graph.facebook.com/me?fields=email,name&access_token='+userUpdated.get('authData').facebook.access_token,
                     success:function(httpResponse){
