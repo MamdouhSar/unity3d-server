@@ -15,7 +15,7 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
             success:function(httpResponse){
                 user.set('username', httpResponse.data.name);
                 user.set('email', httpResponse.data.email);
-                user.save().then(
+                user.save({useMasterKey: true}).then(
                     function(result) {
                         console.log('===========================================');
                         console.log('============FACEBOOK DATA==================');
@@ -25,7 +25,7 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
                         response.success(result);
                     },
                     function(error) {
-                        console.log(error);
+                        console.log(error.message);
                         response.success(error);
                     }
                 );
