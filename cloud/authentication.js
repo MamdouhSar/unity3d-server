@@ -91,7 +91,7 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                         userObject.setEmail(httpResponse.data.email);
                         userObject.save({useMasterKey : true}).then(
                             function(saved) {
-
+                                response.success(JSON.stringify(saved))
                             },
                             function(error) {
                                 response.success(error.message);
@@ -103,7 +103,7 @@ Parse.Cloud.define('updateProfile', function(request, response) {
                     }
                 });
             } else {
-                response.success(userUpdated);
+                response.success(JSON.stringify(userUpdated));
             }
         },
         function(error) {
