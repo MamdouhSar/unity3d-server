@@ -13,11 +13,22 @@ Parse.Cloud.afterSave(Parse.User, function(request, response) {
         Parse.Cloud.httpRequest({
             url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
             success:function(httpResponse){
-                console.log('===========================================');
-                console.log('============FACEBOOK DATA==================');
-                console.log(httpResponse.data.name);
-                console.log(httpResponse.data.email);
-                console.log('===========================================');
+                user.set('username', httpResponse.data.name);
+                user.set('email', httpResponse.data.email);
+                user.save().then(
+                    function(result) {
+                        console.log('===========================================');
+                        console.log('============FACEBOOK DATA==================');
+                        console.log(httpResponse.data.name);
+                        console.log(httpResponse.data.email);
+                        console.log('===========================================');
+                        response.success(result);
+                    },
+                    function(error) {
+                        console.log(error);
+                        response.success(error);
+                    }
+                );
             },
             error:function(httpResponse){
                 console.error(httpResponse);
