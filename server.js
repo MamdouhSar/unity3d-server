@@ -24,7 +24,14 @@ var api = new ParseServer({
     javascriptKey: process.env.JAVASCRIPT_KEY || '',
     restAPIKey: process.env.REST_API_KEY || '',
     dotNetKey: process.env.DOT_NET_KEY || '',
-    clientKey: process.env.CLIENT_KEY || ''
+    clientKey: process.env.CLIENT_KEY || '',
+    verbose: true,
+    push: {
+        android: {
+            senderId: process.env.ANDROID_SENDER_ID || '',
+            apiKey: process.env.ANDROID_API_KEY || ''
+        }
+    }
 });
 
 app.use('/parse', api);
