@@ -7,7 +7,7 @@ require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
 
-Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+Parse.Cloud.afterSave(Parse.User, function(request, response) {
     var user = request.object;
     if (Parse.FacebookUtils.isLinked(user)) {
         Parse.Cloud.httpRequest({
