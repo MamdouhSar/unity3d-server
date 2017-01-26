@@ -5,16 +5,16 @@ var async = require('async');
 
 Parse.Cloud.define('searchUser', function(request, response) {
     var searchTerm = request.params.searchTerm;
-    var usernameQuery = new Parse.Query(Parse.User());
+    var usernameQuery = new Parse.Query('User');
     usernameQuery.startsWith('username', searchTerm);
-    var emailQuery = new Parse.Query(Parse.User());
+    var emailQuery = new Parse.Query('User');
     emailQuery.startsWith('email', searchTerm);
-    var usernameLowerQuery = new Parse.Query(Parse.User());
+    var usernameLowerQuery = new Parse.Query('User');
     usernameLowerQuery.startsWith('usernameLower', searchTerm);
     var mainQuery = Parse.Query.or(usernameQuery, emailQuery, usernameLowerQuery);
     mainQuery.find().then(
         function(results) {
-            var searchResult = []
+            var searchResult = [];
             async.each(results, function(singleResult, resultCallback) {
                 searchResult.push({
                     'id': singleResult.id,
