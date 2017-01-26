@@ -6,24 +6,31 @@ var async = require('async');
 Parse.Cloud.define('requestFriend', function(request, response) {
     var user = request.user;
     var requestedUser = request.params.id;
-    var friendRequest = new Parse.Object('FriendRequest');
-    friendRequest.set('requestedBy', user);
-    friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'User', 'objectId': requestedUser});
-    friendRequest.set('isAccepted', false);
-    friendRequest.save().then(
-        function(result) {
-            response.success({
-                'result': 'Request Sent',
-                'request': result
-            })
-        },
-        function(error) {
-            response.success({
-                'result': 'ERROR',
-                'message' : error.message
-            })
-        }
-    );
+    if(user.id != requestedUser) {
+        var friendRequest = new Parse.Object('FriendRequest');
+        friendRequest.set('requestedBy', user);
+        friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'User', 'objectId': requestedUser});
+        friendRequest.set('isAccepted', false);
+        friendRequest.save().then(
+            function(result) {
+                response.success({
+                    'message': 'SUCCESS',
+                    'result': result
+                })
+            },
+            function(error) {
+                response.success({
+                    'message': 'ERROR',
+                    'result' : error.message
+                })
+            }
+        );
+    } else {
+        response.success({
+            'message': 'ERROR',
+            'result': 'User cannot request himself'
+        })
+    }
 });
 
 Parse.Cloud.define('acceptFriend', function(request, response) {
@@ -43,7 +50,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             requestUser.save().then(
                                 function(requestedFriendSaved) {
                                     response.success({
-                                        'result': 'Friend Added',
+                                        'message': 'SUCCESS',
                                         'request': reqSaved,
                                         'userAccepted': userFriendSaved,
                                         'userRequested': requestedFriendSaved
@@ -51,32 +58,32 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                 },
                                 function(error) {
                                     response.success({
-                                        'result': 'ERROR',
-                                        'message': error.message
+                                        'message': 'ERROR',
+                                        'result': error.message
                                     });
                                 }
                             )
                         },
                         function(error) {
                             response.success({
-                                'result': 'ERROR',
-                                'message': error.message
+                                'message': 'ERROR',
+                                'result': error.message
                             });
                         }
                     );
                 },
                 function(error) {
                     response.success({
-                        'result': 'ERROR - ACCEPTING REQUEST',
-                        'message': error.message
+                        'message': 'ERROR',
+                        'result': error.message
                     })
                 }
             )
         },
         function(error) {
             response.success({
-                'result': 'ERROR',
-                'message': error.message
+                'message': 'ERROR',
+                'result': error.message
             })
         }
     )
@@ -97,11 +104,12 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
     function(err) {
         if(err) {
             response.success({
-                'result': 'ERROR',
-                'message': err
+                'message': 'ERROR',
+                'result': err
             });
         } else {
             response.success({
+                'message': 'SUCCESS',
                 'result': responseFriends
             });
         }
@@ -124,11 +132,12 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
             function(error){
                 if(error) {
                     response.success({
-                        'result': 'ERROR',
-                        'message': error
+                        'message': 'ERROR',
+                        'result': error
                     });
                 } else {
                     response.success({
+                        'message': 'SUCCESS',
                         'result': friendRequests
                     })
                 }
@@ -136,8 +145,8 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
         },
         function(error) {
             response.success({
-                'result': 'ERROR',
-                'message': error.message
+                'message': 'ERROR',
+                'result': error.message
             })
         }
     );
