@@ -6,6 +6,7 @@ require('./friends.js');
 require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
+require('./search.js');
 
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     var user = request.object;
