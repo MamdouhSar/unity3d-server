@@ -7,40 +7,21 @@ require('./conversation.js');
 require('./message.js');
 require('./authentication.js');
 
-/*Parse.Cloud.afterSave(Parse.User, function(request, response) {
-    console.log(JSON.stringify(request));
-    console.log(JSON.stringify(request.object));
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     var user = request.object;
+    var toLowerCase = function(w) { return w.toLowerCase(); };
     if (Parse.FacebookUtils.isLinked(user)) {
         Parse.Cloud.httpRequest({
             url:'https://graph.facebook.com/me?fields=email,name&access_token='+user.get('authData').facebook.access_token,
             success:function(httpResponse){
-                console.log('===========================================');
-                console.log('============FACEBOOK DATA==================');
-                console.log(httpResponse.data.name);
-                console.log(httpResponse.data.email);
-                console.log(JSON.stringify(user));
-                console.log('===========================================');
                 user.setUsername(httpResponse.data.name);
                 user.setEmail(httpResponse.data.email);
-                user.save({lastLogin:new Date()}, { sessionToken: user.get("sessionToken") }).then(
-                    function(result) {
-                        console.log('===========================================');
-                        console.log('============FACEBOOK DATA==================');
-                        console.log(httpResponse.data.name);
-                        console.log(httpResponse.data.email);
-                        console.log('===========================================');
-                        response.success(JSON.stringify(result));
-                    },
-                    function(error) {
-                        console.log(JSON.stringify(error));
-                        response.success(JSON.stringify(error));
-                    }
-                );
+                user.set('usernameLower', toLowerCase(httpResponse.data.name.trim()))
+                response.success();
             },
             error:function(httpResponse){
                 console.error(httpResponse);
             }
         });
     }
-});*/
+});
