@@ -3,7 +3,7 @@
  */
 var express = require('express');
 var path = require('path');
-var cors = require('cors');
+//var cors = require('cors');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var ParseServer = require('parse-server').ParseServer;
@@ -12,7 +12,7 @@ var Parse = require('parse/node');
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
 var app = express();
-app.use(cors());
+//app.use(cors());
 
 //-------------------------Configuring Parse Server
 var api = new ParseServer({
