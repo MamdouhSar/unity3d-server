@@ -24,5 +24,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
                 console.error(httpResponse);
             }
         });
+    } else {
+        response.success();
     }
 });
