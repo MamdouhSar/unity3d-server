@@ -31,7 +31,8 @@ var api = new ParseServer({
             senderId: process.env.ANDROID_SENDER_ID || '',
             apiKey: process.env.ANDROID_API_KEY || ''
         }
-    }
+    },
+    verbose: true
 });
 
 app.use('/parse', api);
@@ -46,42 +47,6 @@ var httpServer = require('http').createServer(app);
 httpServer.listen(port, function() {
     console.log('Unity3D Server is running');
 });
-
-//-------------------------Configuring Passport with Facebook Strategy
-/*passport.use(new FacebookStrategy({
-    clientID: '402189270127012',
-    clientSecret: '778191bb578dc3a820e308389f6f7b89',
-    callbackURL: "https://unity3d-server.herokuapp.com/auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-      return cb(null, profile);
-  }
-));
-
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
-
-app.use(require('morgan')('combined'));
-app.use(require('cookie-parser')());
-app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.get('/login/facebook', passport.authenticate('facebook'));
-
-app.get('/login/facebook/return',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    function(req, res) {
-        res.redirect('/');
-    }
-);*/
 
 //-------------------------Configuring Socket.io for real-time chat
 var io = require('socket.io')(httpServer);
