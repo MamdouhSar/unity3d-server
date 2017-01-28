@@ -6,7 +6,7 @@ Parse.Cloud.define('signUp', function(request, response) {
     var userObject = {
         'username': request.params.username,
         'email': request.params.email,
-        'password': request.params.password,
+        'password': request.params.password
     };
     var newUser = new Parse.User();
     newUser.set('username', userObject.username);
