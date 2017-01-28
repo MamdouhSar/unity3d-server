@@ -16,7 +16,7 @@ app.use(cors());
 
 //-------------------------Configuring Parse Server
 var api = new ParseServer({
-    databaseURI: databaseUri || 'mongodb://localhost:27107/devUnity',
+    databaseURI: databaseUri || 'mongodb://localhost:27017/devUnity',
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
     appId: process.env.APP_ID || 'MyAppId',
     masterKey: process.env.MASTER_KEY || 'masterKey',
