@@ -31,7 +31,7 @@ var api = new ParseServer({
     verbose: true
 });
 
-app.use('/static', express.static(path.join(__dirname, 'public')))
+app.use('/public', express.static('public'));
 app.use('/parse', api);
 
 app.get('/', function(req, res){
