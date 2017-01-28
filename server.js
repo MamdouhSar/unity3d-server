@@ -3,16 +3,12 @@
  */
 var express = require('express');
 var path = require('path');
-//var cors = require('cors');
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
 var ParseServer = require('parse-server').ParseServer;
 var Parse = require('parse/node');
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
 var app = express();
-//app.use(cors());
 
 //-------------------------Configuring Parse Server
 var api = new ParseServer({
@@ -53,10 +49,6 @@ var io = require('socket.io')(httpServer);
 
 io.on('connection', function(socket){
     console.log('user connected');
-    /*socket.on('chat message', function(msg){
-        console.log('message: ' + msg);
-        io.emit('chat message', msg);
-    });*/
 
     socket.on('subscribe', function(conversation) {
         console.log('joining room ', conversation);
