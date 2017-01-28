@@ -5,7 +5,7 @@ var async = require('async');
 
 Parse.Cloud.define('getAllUsers', function(request, response) {
   var userQuery = new Parse.Query('User');
-  userQuery.find().then(
+  userQuery.find({sessionToken: request.user.getSessionToken()}).then(
     function(result) {
       var resultArray = [];
       async.each(result, function(singleResult, resultCallback) {
