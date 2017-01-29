@@ -7,7 +7,9 @@ Parse.Cloud.define('saveMessage', function(request, response) {
         'conversationId': request.params.conversationId,
         'sentBy': request.params.sentBy,
         'sentTo': request.params.sentTo,
-        'content': request.params.content
+        'content': {
+            'message': request.params.content
+        }
     };
     var messageObject = new Parse.Object('Message');
     messageObject.set('conversationId', {'__type':'Pointer', 'className': 'Conversation', 'objectId': message.conversationId});
