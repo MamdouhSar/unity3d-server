@@ -53,11 +53,12 @@ io.on('connection', function(socket){
 
     socket.on('subscribe', function(conversation) {
         console.log('joining room ', conversation);
-        socket.join(conversation);
+        socket.join(conversation.conversation);
     });
 
     socket.on('send message', function(data) {
         console.log('sending conversation post ', data.conversation);
+        console.log('message ', data.message);
         socket.broadcast.to(data.conversation).emit('conversation private post', {
             message: data.message
         });
