@@ -54,10 +54,49 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             friend.addUnique('friends', requestUser);
                             friend.save().then(
                               function(result) {
-                                  response.success({
-                                    'message': 'SUCCESS',
-                                    'result': result
-                                  });
+                                  var friendQuery2 = new Parse.Query('Friends');
+                                  friendQuery2.equalTo('user', requestUser);
+                                  friendQuery2.first({sessionToken: user.getSessionToken()}).then(
+                                    function(friend2){
+                                        if(friend2) {
+                                            friend2.addUnique('friends', user);
+                                            friend2.save().then(
+                                              function(result2) {
+                                                  response.success({
+                                                    'message': 'SUCCESS',
+                                                    'result1': result,
+                                                    'result2': result2
+                                                  });
+                                              }
+                                            );
+                                        } else {
+                                            var newFriendObject = new Parse.Object('Friend');
+                                            newFriendObject.set('user', user);
+                                            newFriendObject.addUnique('friends', requestUser);
+                                            newFriendObject.save().then(
+                                              function(result2) {
+                                                  response.success({
+                                                      'message': 'SUCCESS',
+                                                      'result1': result,
+                                                      'result2': result2
+                                                  });
+                                              },
+                                              function(error) {
+                                                  response.success({
+                                                      'message': 'ERROR',
+                                                      'result': error.message
+                                                  });
+                                              }
+                                            );
+                                        }
+                                    },
+                                    function(error) {
+                                        response.success({
+                                            'message': 'ERROR',
+                                            'result': error.message
+                                        });
+                                    }
+                                  );
                               },
                               function(error) {
                                 response.success({
@@ -72,10 +111,49 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             newFriendObject.addUnique('friends', requestUser);
                             newFriendObject.save().then(
                               function(result) {
-                                  response.success({
-                                      'message': 'SUCCESS',
-                                      'result': result
-                                  });
+                                  var friendQuery2 = new Parse.Query('Friends');
+                                  friendQuery2.equalTo('user', requestUser);
+                                  friendQuery2.first({sessionToken: user.getSessionToken()}).then(
+                                    function(friend2){
+                                        if(friend2) {
+                                            friend2.addUnique('friends', user);
+                                            friend2.save().then(
+                                              function(result2) {
+                                                  response.success({
+                                                    'message': 'SUCCESS',
+                                                    'result1': result,
+                                                    'result2': result2
+                                                  });
+                                              }
+                                            );
+                                        } else {
+                                            var newFriendObject2 = new Parse.Object('Friend');
+                                            newFriendObject2.set('user', user);
+                                            newFriendObject2.addUnique('friends', requestUser);
+                                            newFriendObject2.save().then(
+                                              function(result2) {
+                                                  response.success({
+                                                      'message': 'SUCCESS',
+                                                      'result1': result,
+                                                      'result2': result2
+                                                  });
+                                              },
+                                              function(error) {
+                                                  response.success({
+                                                      'message': 'ERROR',
+                                                      'result': error.message
+                                                  });
+                                              }
+                                            );
+                                        }
+                                    },
+                                    function(error) {
+                                        response.success({
+                                            'message': 'ERROR',
+                                            'result': error.message
+                                        });
+                                    }
+                                  );
                               },
                               function(error) {
                                   response.success({
