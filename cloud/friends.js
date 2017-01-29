@@ -6,12 +6,12 @@ var async = require('async');
 Parse.Cloud.define('requestFriend', function(request, response) {
     var user = request.user;
     console.log('================================');
-    console.log(request);
+    console.log(request.params.id);
     var requestedUser = request.params.id;
     if(user.id != requestedUser) {
         var friendRequest = new Parse.Object('FriendRequest');
         friendRequest.set('requestedBy', user);
-        friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'User', 'objectId': requestedUser});
+        friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'_User', 'objectId': requestedUser});
         friendRequest.set('isAccepted', false);
         friendRequest.save().then(
             function(result) {
