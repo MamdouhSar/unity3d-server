@@ -48,6 +48,9 @@ httpServer.listen(port, function() {
 //-------------------------Configuring Socket.io for real-time chat
 var io = require('socket.io')(httpServer);
 
+Parse.initialize("Unity3DServer", "2lKrCoZVRA", "xJQ8tCI73N");
+Parse.serverURL = "https://unity3d-server.herokuapp.com/parse";
+
 io.on('connection', function(socket){
     console.log('user connected');
 
@@ -59,9 +62,22 @@ io.on('connection', function(socket){
     socket.on('send message', function(data) {
         console.log('sending conversation post ', data.conversation);
         console.log('message ', data.message);
-        io.sockets.in(data.conversation).emit('conversation private post', {
-            message: data.message
-        });
+        var messageObject = {
+            'conversationId': data.conversation,
+            'sentBy': data.sentBy,
+            'sentTo': data.sentTo,
+            'content': data.message
+        };
+        Parse.Cloud.run('saveMessage', messageObject).then(
+          function(result) {
+            io.sockets.in(data.conversation).emit('conversation private post', {
+                message: data.message
+            });
+          },
+          function(error) {
+              console.log(error);
+          }
+        );
     });
 
     socket.on('disconnect', function(){
