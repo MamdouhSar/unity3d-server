@@ -50,6 +50,8 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                 friendQuery.equalTo('user', user);
                 friendQuery.first({sessionToken: user.getSessionToken()}).then(
                     function(friend) {
+                        console.log('=====================================');
+                        console.log(friend);
                         if(friend) {
                             friend.addUnique('friends', requestUser);
                             friend.save().then(
@@ -58,6 +60,8 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                   friendQuery2.equalTo('user', requestUser);
                                   friendQuery2.first({sessionToken: user.getSessionToken()}).then(
                                     function(friend2){
+                                        console.log('===================================');
+                                        console.log(friend2)
                                         if(friend2) {
                                             friend2.addUnique('friends', user);
                                             friend2.save().then(
