@@ -254,7 +254,7 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
       function(result) {
         response.success({
             'message': 'SUCCESS',
-            'result': result
+            'result': result.get('friends')
         });
       },
       function(error) {
