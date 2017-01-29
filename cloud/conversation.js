@@ -8,7 +8,7 @@ Parse.Cloud.define('initConversation', function(request, response) {
     conversationQuery1.equalTo('user2', {'__type':'Pointer', 'className':'_User', 'objectId': request.params.toId});
     var conversationQuery2 = new Parse.Query('Conversation');
     conversationQuery2.equalTo('user1', {'__type':'Pointer', 'className':'_User', 'objectId': request.params.toId});
-    conversationQuery2.equalTo('user1', request.user);
+    conversationQuery2.equalTo('user2', request.user);
     var mainConversationQuery = Parse.Query.or(conversationQuery1, conversationQuery2);
     mainConversationQuery.find().then(
         function(result) {
