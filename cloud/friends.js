@@ -252,9 +252,30 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
     friendQuery.equalTo('user', user);
     friendQuery.first({sessionToken: user.getSessionToken()}).then(
       function(result) {
-        response.success({
-            'message': 'SUCCESS',
-            'result': result.get('friends')
+          var responseArray = [];
+        async.each(result.get('friends'), function(singleResult, resultCallback) {
+            singleResult.fetch().then(
+              function(friend) {
+                  responseArray.push(friend);
+                  resultCallback()
+              },
+              function(error) {
+                  response.success({
+                      'message': 'ERROR',
+                      'result': error.message
+                  });
+              }
+            );
+        },
+        function(error) {
+           if(error) {
+               throw error;
+           } else {
+                response.success({
+                    'message': 'SUCCESS',
+                    'result': responseArray
+                });
+           }
         });
       },
       function(error) {
