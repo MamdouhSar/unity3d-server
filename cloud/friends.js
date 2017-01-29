@@ -71,8 +71,8 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                             );
                                         } else {
                                             var newFriendObject = new Parse.Object('Friend');
-                                            newFriendObject.set('user', user);
-                                            newFriendObject.addUnique('friends', requestUser);
+                                            newFriendObject.set('user', requestUser);
+                                            newFriendObject.addUnique('friends', user);
                                             newFriendObject.save().then(
                                               function(result2) {
                                                   response.success({
@@ -128,8 +128,8 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                             );
                                         } else {
                                             var newFriendObject2 = new Parse.Object('Friend');
-                                            newFriendObject2.set('user', user);
-                                            newFriendObject2.addUnique('friends', requestUser);
+                                            newFriendObject2.set('user', requestUser);
+                                            newFriendObject2.addUnique('friends', user);
                                             newFriendObject2.save().then(
                                               function(result2) {
                                                   response.success({
