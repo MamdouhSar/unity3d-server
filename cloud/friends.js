@@ -52,7 +52,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                     function(friend) {
                         console.log('=====================================');
                         console.log(friend);
-                        if(friend) {
+                        if(friend != undefined) {
                             friend.addUnique('friends', requestUser);
                             friend.save().then(
                               function(result) {
@@ -62,7 +62,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                     function(friend2){
                                         console.log('===================================');
                                         console.log(friend2)
-                                        if(friend2) {
+                                        if(friend2 != undefined) {
                                             friend2.addUnique('friends', user);
                                             friend2.save().then(
                                               function(result2) {
@@ -118,8 +118,8 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                                   var friendQuery2 = new Parse.Query('Friends');
                                   friendQuery2.equalTo('user', requestUser);
                                   friendQuery2.first({sessionToken: user.getSessionToken()}).then(
-                                    function(friend2){
-                                        if(friend2) {
+                                    function(friend2 ){
+                                        if(friend2 != undefined) {
                                             friend2.addUnique('friends', user);
                                             friend2.save().then(
                                               function(result2) {
@@ -248,7 +248,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
 
 Parse.Cloud.define('getAllFriends', function(request, response) {
     var user = request.user;
-    var friendQuery = new Parse.Query('Friends');
+    var friendQuery = new Parse.Query('Friend');
     friendQuery.equalTo('user', user);
     friendQuery.find({sessionToken: user.getSessionToken()}).then(
       function(result) {
