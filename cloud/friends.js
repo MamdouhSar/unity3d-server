@@ -41,7 +41,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
     requestObject.id = request.params.requestId;
     var requestUser = new Parse.User();
     requestUser = requestObject.get('requestedBy');
-    requestUser.set('isAccepted', true);
+    requestObject.set('isAccepted', true);
     requestObject.save().then(
         function(requestSaved) {
             var friendQuery = new Parse.Query('Friends');
