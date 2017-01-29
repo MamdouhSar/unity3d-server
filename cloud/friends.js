@@ -39,65 +39,75 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
     var user = request.user;
     var requestObject = new Parse.Object('FriendRequest');
     requestObject.id = request.params.requestId;
-    var requestUser = new Parse.User();
-    requestUser.id = requestObject.get('requestedBy').id;
-    requestObject.set('isAccepted', true);
-    requestObject.save().then(
-        function(requestSaved) {
-            var friendQuery = new Parse.Query('Friends');
-            friendQuery.equalTo('user', user);
-            friendQuery.first({sessionToken: user.getSessionToken()}).then(
-                function(friend) {
-                    if(friend) {
-                        friend.addUnique('friends', requestUser);
-                        friend.save().then(
-                          function(result) {
-                              response.success({
-                                'message': 'SUCCESS',
-                                'result': result
-                              });
-                          },
-                          function(error) {
-                            response.success({
-                                'message': 'ERROR',
-                                'result': error.message
-                            });
-                          }
-                        );
-                    } else {
-                        var newFriendObject = new Parse.Object('Friend');
-                        newFriendObject.set('user', user);
-                        newFriendObject.addUnique('friends', requestUser);
-                        newFriendObject.save().then(
-                          function(result) {
-                              response.success({
-                                  'message': 'SUCCESS',
-                                  'result': result
-                              });
-                          },
-                          function(error) {
-                              response.success({
-                                  'message': 'ERROR',
-                                  'result': error.message
-                              });
-                          }
-                        );
+    requestObject.fetch().then(
+      function(requestObjectFetched) {
+        requestObjectFetched.set('isAccepted', true);
+        var requestUser = new Parse.User();
+        requestUser.id = requestObjectFetched.get('requestedBy').id;
+        requestObjectFetched.save().then(
+            function(requestSaved) {
+                var friendQuery = new Parse.Query('Friends');
+                friendQuery.equalTo('user', user);
+                friendQuery.first({sessionToken: user.getSessionToken()}).then(
+                    function(friend) {
+                        if(friend) {
+                            friend.addUnique('friends', requestUser);
+                            friend.save().then(
+                              function(result) {
+                                  response.success({
+                                    'message': 'SUCCESS',
+                                    'result': result
+                                  });
+                              },
+                              function(error) {
+                                response.success({
+                                    'message': 'ERROR',
+                                    'result': error.message
+                                });
+                              }
+                            );
+                        } else {
+                            var newFriendObject = new Parse.Object('Friend');
+                            newFriendObject.set('user', user);
+                            newFriendObject.addUnique('friends', requestUser);
+                            newFriendObject.save().then(
+                              function(result) {
+                                  response.success({
+                                      'message': 'SUCCESS',
+                                      'result': result
+                                  });
+                              },
+                              function(error) {
+                                  response.success({
+                                      'message': 'ERROR',
+                                      'result': error.message
+                                  });
+                              }
+                            );
+                        }
+                    },
+                    function(error) {
+                      response.success({
+                          'message': 'ERROR',
+                          'result': error.message
+                      });
                     }
-                },
-                function(error) {
-                  response.success({
-                      'message': 'ERROR',
-                      'result': error.message
-                  });
-                }
-            );
-        },
-        function(error) {
-            response.success({
-                'message': 'ERROR',
-                'result': error.message
-            });
-        }
+                );
+            },
+            function(error) {
+                response.success({
+                    'message': 'ERROR',
+                    'result': error.message
+                });
+            }
+        );
+      },
+      function(error) {
+          response.success({
+              'message': 'ERROR',
+              'result': error.message
+          });
+      }
     );
     /*var user = request.user;
     var requestObject = new Parse.Object('FriendRequest');
