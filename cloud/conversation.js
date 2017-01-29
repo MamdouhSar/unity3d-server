@@ -5,9 +5,9 @@
 Parse.Cloud.define('initConversation', function(request, response) {
     var conversationQuery1 = new Parse.Query('Conversation');
     conversationQuery1.equalTo('user1', request.user);
-    conversationQuery1.equalTo('user2', {'__type':'Pointer', 'className':'User', 'objectId': request.params.toId});
+    conversationQuery1.equalTo('user2', {'__type':'Pointer', 'className':'_User', 'objectId': request.params.toId});
     var conversationQuery2 = new Parse.Query('Conversation');
-    conversationQuery2.equalTo('user1', {'__type':'Pointer', 'className':'User', 'objectId': request.params.toId});
+    conversationQuery2.equalTo('user1', {'__type':'Pointer', 'className':'_User', 'objectId': request.params.toId});
     conversationQuery2.equalTo('user1', request.user);
     var mainConversationQuery = Parse.Query.or(conversationQuery1, conversationQuery2);
     mainConversationQuery.find().then(
@@ -15,7 +15,7 @@ Parse.Cloud.define('initConversation', function(request, response) {
             if(result.length == 0) {
                 var newConversation = new Parse.Object('Conversation');
                 newConversation.set('user1', request.user);
-                newConversation.set('user2', {'__type':'Pointer', 'className':'User', 'objectId': request.params.toId});
+                newConversation.set('user2', {'__type':'Pointer', 'className':'_User', 'objectId': request.params.toId});
                 newConversation.save().then(
                     function(result) {
                         response.success({
