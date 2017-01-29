@@ -59,7 +59,7 @@ io.on('connection', function(socket){
     socket.on('send message', function(data) {
         console.log('sending conversation post ', data.conversation);
         console.log('message ', data.message);
-        socket.broadcast.to(data.conversation).emit('conversation private post', {
+        io.sockets.in(data.conversation).emit('conversation private post', {
             message: data.message
         });
     });
