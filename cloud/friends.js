@@ -125,7 +125,7 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
     requestQuery.equalTo('isAccepted', false);
     requestQuery.include('requestedBy');
     requestQuery.find().then(
-        function(requests) {
+        function(request) {
             var friendRequests = [];
             async.each(request, function(singleRequest, requestCallback) {
                 friendRequests.push(singleRequest.get('requestedBy'));
