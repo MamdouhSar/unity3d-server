@@ -5,6 +5,8 @@ var async = require('async');
 
 Parse.Cloud.define('requestFriend', function(request, response) {
     var user = request.user;
+    console.log('================================');
+    console.log(request);
     var requestedUser = request.params.id;
     if(user.id != requestedUser) {
         var friendRequest = new Parse.Object('FriendRequest');
