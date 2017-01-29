@@ -71,7 +71,7 @@ io.on('connection', function(socket){
         Parse.Cloud.run('saveMessage', messageObject).then(
           function(result) {
             console.log(JSON.stringify(result), data.conversation, data.message);
-            io.sockets.in(data.conversation).emit('conversation private post', {
+            socket.broadcast.to(data.conversation).emit('conversation private post', {
                 message: data.message
             });
           },
