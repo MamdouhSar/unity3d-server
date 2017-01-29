@@ -128,7 +128,10 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
         function(requests) {
             var friendRequests = [];
             async.each(requests, function(singleRequest, requestCallback) {
-                friendRequests.push(singleRequest.get('requestedBy'));
+                friendRequests.push({
+                    'requestId': singleRequest.id,
+                    'requestedBy': singleRequest.get('requestedBy')
+                });
                 requestCallback();
             },
             function(error){
