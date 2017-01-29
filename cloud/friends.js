@@ -250,7 +250,7 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
     var user = request.user;
     var friendQuery = new Parse.Query('Friend');
     friendQuery.equalTo('user', user);
-    friendQuery.find({sessionToken: user.getSessionToken()}).then(
+    friendQuery.first({sessionToken: user.getSessionToken()}).then(
       function(result) {
         response.success({
             'message': 'SUCCESS',
