@@ -4,41 +4,38 @@
 var async = require('async');
 
 Parse.Cloud.define('searchUser', function(request, response) {
+    var user = request.user;
     var searchTerm = request.params.searchTerm;
-    var usernameQuery = new Parse.Query('User');
-    usernameQuery.startsWith('username', searchTerm);
     var emailQuery = new Parse.Query('User');
     emailQuery.startsWith('email', searchTerm);
-    var usernameLowerQuery = new Parse.Query('User');
-    usernameLowerQuery.startsWith('usernameLower', searchTerm);
-    var mainQuery = Parse.Query.or(usernameQuery, emailQuery, usernameLowerQuery);
-    mainQuery.find().then(
-        function(results) {
-            var searchResult = [];
-            async.each(results, function(singleResult, resultCallback) {
-                searchResult.push({
-                    'id': singleResult.id,
-                    'username': singleResult.get('username'),
-                    'email': singleResult.get('email')
-                });
-                resultCallback();
+    var usernameLowerQuery = new Parse.Query('usernameLower');
+    usernameLowerQuery.startsWith('usernameLower', searchTerm.toLowerCase());
+    var mainQuery = Parse.Query.or(emailQuery, usernameLowerQuery);
+    mainQuery.find({sessionToken: user.getSessionToken()})
+        .then(function(foundUsers) {
+          response.success({
+            'message':'SUCCESS',
+            'result': foundUsers
+          });
+          /*var responseArray = [];
+            async.each(foundUsers, function(singleUser, userCallback) {
+
             },
-            function(err) {
-                if(err) {
-                    response.success({
-                        'message': 'ERROR',
-                        'result': err
-                    });
-                } else {
-                    response.success(searchResult);
-                }
-            });
+            function(error) {
+              if(error) {
+                response.success({
+                  'message': 'ERROR',
+                  'result': error
+                });
+              } else {
+
+              }
+            });*/
         },
         function(error) {
             response.success({
                 'message': 'ERROR',
                 'result': error.message
-            })
-        }
-    );
+            });
+        });
 });

@@ -1,6 +1,7 @@
 /**
  * Created by mamdouh on 15/01/17.
  */
+var async = require('async');
 
 Parse.Cloud.define('initConversation', function(request, response) {
     var conversationQuery1 = new Parse.Query('Conversation');
@@ -46,4 +47,56 @@ Parse.Cloud.define('initConversation', function(request, response) {
             });
         }
     );
+});
+
+Parse.Cloud.define('getConversations', function(request, response) {
+  var user = request.user;
+  var conversationQuery1 = new Parse.Query('Conversation');
+  conversationQuery1.equalTo('user1', request.user);
+  var conversationQuery2 = new Parse.Query('Conversation');
+  conversationQuery2.equalTo('user2', request.user);
+  var mainQuery = new Parse.Query.or(conversationQuery1, conversationQuery2);
+  mainQuery.find().then(
+    function(conversations) {
+      var responseArray = [];
+      async.each(conversations, function(singleConversation, conversationCallback) {
+        var messageQuery = new Parse.Query('Message');
+        messageQuery.equalTo('conversation', singleConversation);
+        messageQuery.find().then(
+          function(messages) {
+            responseArray.push({
+              'conversation': singleConversation,
+              'messages': messages
+            });
+            conversationCallback();
+          },
+          function(error) {
+            response.success({
+              'message': 'ERROR',
+              'result': error
+            });
+          }
+        );
+      },
+      function(error) {
+        if(error) {
+          response.success({
+            'message': 'ERROR',
+            'result': error
+          });
+        } else {
+          response.success({
+            'message': 'SUCCESS',
+            'result': responseArray
+          });
+        }
+      });
+    },
+    function(error) {
+      response.success({
+        'message': 'ERROR',
+        'result': error.message
+      });
+    }
+  );
 });

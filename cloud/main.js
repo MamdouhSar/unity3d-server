@@ -18,7 +18,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
             success:function(httpResponse){
                 user.setUsername(httpResponse.data.name);
                 user.setEmail(httpResponse.data.email);
-                user.set('usernameLower', toLowerCase(httpResponse.data.name.trim()))
+                user.set('usernameLower', httpResponse.data.name.trim().toLowerCase());
                 response.success();
             },
             error:function(httpResponse){
