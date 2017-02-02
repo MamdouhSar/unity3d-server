@@ -63,7 +63,7 @@ Parse.Cloud.define('getConversations', function(request, response) {
       var responseArray = [];
       async.each(conversations, function(singleConversation, conversationCallback) {
         var messageQuery = new Parse.Query('Message');
-        messageQuery.equalTo('conversation', singleConversation);
+        messageQuery.equalTo('conversationId', singleConversation);
         messageQuery.include('sendBy');
         messageQuery.include('sentTo');
         messageQuery.find().then(
@@ -72,7 +72,7 @@ Parse.Cloud.define('getConversations', function(request, response) {
               responseArray.push({
                 'conversation': {
                   'id': singleConversation.id,
-                  'with': singleConversation.get('user1') == user ? singleConversation.get('user2') : singleConversation.get('user1')
+                  'with': singleConversation.get('user1').id == user.id ? singleConversation.get('user2') : singleConversation.get('user1')
                 },
                 'messages': {
                   'id': singleMessage.id,
