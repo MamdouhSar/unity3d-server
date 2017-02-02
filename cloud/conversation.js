@@ -56,19 +56,43 @@ Parse.Cloud.define('getConversations', function(request, response) {
   var conversationQuery2 = new Parse.Query('Conversation');
   conversationQuery2.equalTo('user2', request.user);
   var mainQuery = new Parse.Query.or(conversationQuery1, conversationQuery2);
+  mainQuery.include('user1');
+  mainQuery.include('user2');
   mainQuery.find().then(
     function(conversations) {
       var responseArray = [];
       async.each(conversations, function(singleConversation, conversationCallback) {
         var messageQuery = new Parse.Query('Message');
         messageQuery.equalTo('conversation', singleConversation);
+        messageQuery.include('sendBy');
+        messageQuery.include('sentTo');
         messageQuery.find().then(
           function(messages) {
-            responseArray.push({
-              'conversation': singleConversation,
-              'messages': messages
+            async.each(messages, function(singleMessage, messageCallback) {
+              responseArray.push({
+                'conversation': {
+                  'id': singleConversation.id,
+                  'with': singleConversation.get('user1') == user ? singleConversation.get('user2') : singleConversation.get('user1')
+                },
+                'messages': {
+                  'id': singleMessage.id,
+                  'sentBy': singleMessage.get('sentBy'),
+                  'sentTo': singleMessage.get('sentBy'),
+                  'content': singleMessage.get('content').message
+                }
+              });
+              messageCallback();
+            },
+            function(error) {
+              if(error) {
+                response.success({
+                  'message': 'ERROR',
+                  'result': error
+                });
+              } else {
+                conversationCallback();
+              }
             });
-            conversationCallback();
           },
           function(error) {
             response.success({
