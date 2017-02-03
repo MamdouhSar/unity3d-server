@@ -35,6 +35,9 @@ Parse.Cloud.define('requestFriend', function(request, response) {
     }
 });
 
+
+//TODO: Optimize Accept Friend Function
+
 Parse.Cloud.define('acceptFriend', function(request, response) {
     var user = request.user;
     var requestObject = new Parse.Object('FriendRequest');
