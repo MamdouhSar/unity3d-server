@@ -8,7 +8,7 @@ Parse.Cloud.define('searchUser', function(request, response) {
     var searchTerm = request.params.searchTerm;
     var emailQuery = new Parse.Query('User');
     emailQuery.startsWith('email', searchTerm);
-    var usernameLowerQuery = new Parse.Query('usernameLower');
+    var usernameLowerQuery = new Parse.Query('User');
     usernameLowerQuery.startsWith('usernameLower', searchTerm.toLowerCase());
     var mainQuery = Parse.Query.or(emailQuery, usernameLowerQuery);
     mainQuery.find({sessionToken: user.getSessionToken()})
