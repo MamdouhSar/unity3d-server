@@ -56,7 +56,14 @@ io.on('connection', function(socket){
 
     socket.on('subscribe', function(conversation) {
         console.log('joining room ', conversation);
-        socket.join(conversation.conversation);
+        Parse.Cloud.run('messagesRead', {
+          'conversationId': conversation.conversation,
+          'userId': conversation.currentUserId
+        }).then(function() {
+          socket.join(conversation.conversation);
+        }, function(error) {
+          console.log(error);
+        });
     });
 
     socket.on('send message', function(data) {
