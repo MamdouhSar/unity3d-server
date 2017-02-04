@@ -70,18 +70,13 @@ Parse.Cloud.define('getConversations', function(request, response) {
         messageQuery.ascending('createdAt');
         messageQuery.find().then(
           function(messages) {
+            var messageArray = [];
             async.each(messages, function(singleMessage, messageCallback) {
-              responseArray.push({
-                'conversation': {
-                  'id': singleConversation.id,
-                  'with': singleConversation.get('user1').id == user.id ? singleConversation.get('user2') : singleConversation.get('user1')
-                },
-                'messages': {
+              messageArray.push({
                   'id': singleMessage.id,
                   'sentBy': singleMessage.get('sentBy'),
                   'sentTo': singleMessage.get('sentBy'),
                   'content': singleMessage.get('content').message
-                }
               });
               messageCallback();
             },
@@ -92,6 +87,13 @@ Parse.Cloud.define('getConversations', function(request, response) {
                   'result': error
                 });
               } else {
+                responseArray.push({
+                    'conversation': {
+                      'id': singleConversation.id,
+                      'with': singleConversation.get('user1').id == user.id ? singleConversation.get('user2') : singleConversation.get('user1')
+                    },
+                    'messages': messageArray
+                  });
                 conversationCallback();
               }
             });
