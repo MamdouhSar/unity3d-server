@@ -68,6 +68,7 @@ Parse.Cloud.define('getConversations', function(request, response) {
         messageQuery.include('sendBy');
         messageQuery.include('sentTo');
         messageQuery.ascending('createdAt');
+        messageQuery.limit(20);
         messageQuery.find().then(
           function(messages) {
             var messageArray = [];
