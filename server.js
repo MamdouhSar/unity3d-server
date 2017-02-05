@@ -23,10 +23,13 @@ var api = new ParseServer({
     clientKey: process.env.CLIENT_KEY || '',
     facebookAppIds: [process.env.FACEBOOK_APP_ID],
     push: {
-        android: {
-            senderId: process.env.ANDROID_SENDER_ID || '',
-            apiKey: process.env.ANDROID_API_KEY || ''
-        }
+        ios:
+          {
+            pfx: 'cert/FokalDevAPN.p12', // Dev PFX or P12
+            bundleId: 'com.fokalinc.fokal',
+            key:'Starbucks2017!',
+            production: false // Dev
+          }
     },
     verbose: true
 });
