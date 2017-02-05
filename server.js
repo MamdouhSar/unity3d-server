@@ -21,7 +21,7 @@ var api = new ParseServer({
     restAPIKey: process.env.REST_API_KEY || '',
     dotNetKey: process.env.DOT_NET_KEY || '',
     clientKey: process.env.CLIENT_KEY || '',
-    facebookAppIds: [process.env.FACEBOOK_APP_ID],
+    auth: { facebook: { appIds: [process.env.FACEBOOK_APP_ID] } },
     push: {
         ios:
           {
