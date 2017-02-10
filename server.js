@@ -27,8 +27,7 @@ var api = new ParseServer({
           {
             pfx: './cert/FokalDevAPN.p12', // Dev PFX or P12
             bundleId: 'com.fokalinc.fokal',
-            passphrase: 'Aya7aga!',
-            production: false // Dev
+            passphrase: 'Aya7aga!'
           }
     },
     verbose: true
