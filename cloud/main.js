@@ -31,25 +31,33 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.afterSave('Message', function(request, response) {
-  var user = request.object.get("sentBy");
-  user.fetch().then(
-    function(username) {
-      var pushQuery = new Parse.Query(Parse.Installation);
-      pushQuery.equalTo("username",username);
-      Parse.Push.send({
-        where: pushQuery,
-        data: {
-          alert: "You got a message from " + username.get('username'),
-          sound: "default"
-        }
-      },{
-        success: function(){
-          response.success('true');
+  var sentTo = request.object.get("sentTo");
+  sentTo.fetch().then(
+    function(sentToFetched) {
+      var sentBy = request.object.get("sentBy");
+      sentBy.fetch().then(
+        function(sentByFetched) {
+          var pushQuery = new Parse.Query(Parse.Installation);
+          pushQuery.equalTo("username",sentToFetched);
+          Parse.Push.send({
+            where: pushQuery,
+            data: {
+              alert: "You got a message from " + sentByFetched.get('username'),
+              sound: "default"
+            }
+          },{
+            success: function(){
+              response.success('true');
+            },
+            error: function (error) {
+              response.error(error);
+            }
+      });
         },
-        error: function (error) {
+        function (error) {
           response.error(error);
         }
-      });
+      );
     },
     function(error) {
       response.error(error);
