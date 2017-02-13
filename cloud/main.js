@@ -32,12 +32,10 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
 Parse.Cloud.afterSave('Message', function(request, response) {
   var user = request.object.get("sentBy");
-  //Set push query
   user.fetch().then(
     function(username) {
       var pushQuery = new Parse.Query(Parse.Installation);
       pushQuery.equalTo("username",username);
-      //Send Push message
       Parse.Push.send({
         where: pushQuery,
         data: {
