@@ -38,7 +38,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
       sentBy.fetch().then(
         function(sentByFetched) {
           var pushQuery = new Parse.Query(Parse.Installation);
-          pushQuery.equalTo("username",sentToFetched.get('usename'));
+          pushQuery.equalTo("username",sentToFetched.get('username'));
           Parse.Push.send({
             where: pushQuery,
             data: {

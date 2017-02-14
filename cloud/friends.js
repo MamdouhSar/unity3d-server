@@ -19,8 +19,12 @@ Parse.Cloud.define('requestFriend', function(request, response) {
         userObject.id = requestedUser;
         userObject.fetch().then(
           function(userFetched) {
+            var query = new Parse.Query(Parse.User);
+            query.equalTo('username', userFetched.get('username'));
+            // Find devices associated with these users
             var pushQuery = new Parse.Query(Parse.Installation);
-            pushQuery.equalTo("user", userFetched);
+            // need to have users linked to installations
+            pushQuery.matchesQuery('user', query);
             Parse.Push.send({
               where: pushQuery,
               data: {
