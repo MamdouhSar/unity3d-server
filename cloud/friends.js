@@ -27,20 +27,20 @@ Parse.Cloud.define('requestFriend', function(request, response) {
                 alert: "You got a friend request from " + user.get('username'),
                 sound: "default"
               }
-            },{
-              success: function(){
+            },{ useMasterKey: true }).then(
+              function() {
                 response.success({
                   'message': 'SUCCESS',
                   'result': result
-                })
+                });
               },
-              error: function (error) {
+              function(error) {
                 response.success({
                   'message': 'ERROR',
                   'result' : error.message
                 })
               }
-            }, { useMasterKey: true });
+            );
           },
           function(error) {
             response.success({
