@@ -13,8 +13,10 @@ Parse.Cloud.define('requestFriend', function(request, response) {
     friendRequest.set('isAccepted', false);
     friendRequest.save().then(
       function(result) {
+        console.log("LOGGING RESULT OF FRIENDREQUESTSSS")
+        console.log(result);
         var userObject = new Parse.User();
-        userObject.id = result.get('requestedTo').id;
+        userObject.id = requestedUser;
         userObject.fetch().then(
           function(userFetched) {
             var pushQuery = new Parse.Query(Parse.Installation);
