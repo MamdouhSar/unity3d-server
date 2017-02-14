@@ -43,7 +43,7 @@ Parse.Cloud.define('requestFriend', function(request, response) {
                   'result' : error.message
                 })
               }
-            });
+            }, { useMasterKey: true });
           },
           function(error) {
             response.success({

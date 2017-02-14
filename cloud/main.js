@@ -52,7 +52,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
             error: function (error) {
               response.error(error);
             }
-          });
+          }, { useMasterKey: true });
         },
         function (error) {
           response.error(error);
