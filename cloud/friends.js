@@ -19,32 +19,34 @@ Parse.Cloud.define('requestFriend', function(request, response) {
         userObject.id = requestedUser;
         userObject.fetch().then(
           function(userFetched) {
-            var query = new Parse.Query(Parse.User);
-            query.equalTo('username', userFetched.get('username'));
-            // Find devices associated with these users
-            var pushQuery = new Parse.Query(Parse.Installation);
-            // need to have users linked to installations
-            pushQuery.matchesQuery('user', query);
-            Parse.Push.send({
-              where: pushQuery,
-              data: {
-                alert: "You got a friend request from " + user.get('username'),
-                sound: "default"
-              }
-            },{ useMasterKey: true }).then(
-              function() {
-                response.success({
-                  'message': 'SUCCESS',
-                  'result': result
-                });
-              },
-              function(error) {
-                response.success({
-                  'message': 'ERROR',
-                  'result' : error.message
-                })
-              }
-            );
+            var sessionQuery = new Parse.Query(Parse.Session);
+            sessionQuery.equalTo('user', userFetched);
+            sessionQuery.first().then(function(result) {
+              var pushQuery = new Parse.Query(Parse.Installation);
+              pushQuery.equalTo('installationId', result.get('installationId'));
+              Parse.Push.send({
+                where: pushQuery,
+                data: {
+                  alert: "You got a friend request from " + user.get('username'),
+                  sound: "default"
+                }
+              },{ useMasterKey: true }).then(
+                function() {
+                  response.success({
+                    'message': 'SUCCESS',
+                    'result': result
+                  });
+                },
+                function(error) {
+                  response.success({
+                    'message': 'ERROR',
+                    'result' : error.message
+                  })
+                }
+              );
+            }, function(error) {
+
+            });
           },
           function(error) {
             response.success({
