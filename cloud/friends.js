@@ -19,34 +19,28 @@ Parse.Cloud.define('requestFriend', function(request, response) {
         userObject.id = requestedUser;
         userObject.fetch().then(
           function(userFetched) {
-            var sessionQuery = new Parse.Query(Parse.Session);
-            sessionQuery.equalTo('user', userFetched);
-            sessionQuery.first().then(function(result) {
-              var pushQuery = new Parse.Query(Parse.Installation);
-              pushQuery.equalTo('installationId', result.get('installationId'));
-              Parse.Push.send({
-                where: pushQuery,
-                data: {
-                  alert: "You got a friend request from " + user.get('username'),
-                  sound: "default"
-                }
-              },{ useMasterKey: true }).then(
-                function() {
-                  response.success({
-                    'message': 'SUCCESS',
-                    'result': result
-                  });
-                },
-                function(error) {
-                  response.success({
-                    'message': 'ERROR',
-                    'result' : error.message
-                  })
-                }
-              );
-            }, function(error) {
-
-            });
+            var pushQuery = new Parse.Query(Parse.Installation);
+            pushQuery.equalTo('user', userFetched);
+            Parse.Push.send({
+              where: pushQuery,
+              data: {
+                alert: "You got a friend request from " + user.get('username'),
+                sound: "default"
+              }
+            },{ useMasterKey: true }).then(
+              function() {
+                response.success({
+                  'message': 'SUCCESS',
+                  'result': result
+                });
+              },
+              function(error) {
+                response.success({
+                  'message': 'ERROR',
+                  'result' : error.message
+                })
+              }
+            );
           },
           function(error) {
             response.success({
