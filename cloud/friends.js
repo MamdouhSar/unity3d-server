@@ -18,6 +18,9 @@ Parse.Cloud.define('requestFriend', function(request, response) {
         userObject.fetch().then(
           function(userFetched) {
             var pushQuery = new Parse.Query(Parse.Installation);
+            console.log('========================================');
+            console.log(userFetched);
+            console.log('========================================');
             pushQuery.equalTo("username", userFetched.get('username'));
             Parse.Push.send({
               where: pushQuery,
