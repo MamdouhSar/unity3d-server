@@ -13,28 +13,40 @@ Parse.Cloud.define('requestFriend', function(request, response) {
     friendRequest.set('isAccepted', false);
     friendRequest.save().then(
       function(result) {
-        var pushQuery = new Parse.Query(Parse.Installation);
-        pushQuery.equalTo("username",result.get('requestedTo').get('username'));
-        Parse.Push.send({
-          where: pushQuery,
-          data: {
-            alert: "You got a friend request from " + user.get('username'),
-            sound: "default"
-          }
-        },{
-          success: function(){
-            response.success({
-              'message': 'SUCCESS',
-              'result': result
-            })
+        var userObject = new Parse.User();
+        userObject.id = result.get('requestedTo').id;
+        userObject.fetch().then(
+          function(userFetched) {
+            var pushQuery = new Parse.Query(Parse.Installation);
+            pushQuery.equalTo("username", userFetched.get('username'));
+            Parse.Push.send({
+              where: pushQuery,
+              data: {
+                alert: "You got a friend request from " + user.get('username'),
+                sound: "default"
+              }
+            },{
+              success: function(){
+                response.success({
+                  'message': 'SUCCESS',
+                  'result': result
+                })
+              },
+              error: function (error) {
+                response.success({
+                  'message': 'ERROR',
+                  'result' : error.message
+                })
+              }
+            });
           },
-          error: function (error) {
+          function(error) {
             response.success({
               'message': 'ERROR',
               'result' : error.message
             })
           }
-        });
+        );
       },
       function(error) {
         response.success({
