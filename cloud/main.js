@@ -38,7 +38,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
       sentBy.fetch().then(
         function(sentByFetched) {
           var pushQuery = new Parse.Query(Parse.Installation);
-          pushQuery.equalTo("username",sentToFetched);
+          pushQuery.equalTo("username",sentToFetched.get('usename'));
           Parse.Push.send({
             where: pushQuery,
             data: {
@@ -52,7 +52,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
             error: function (error) {
               response.error(error);
             }
-      });
+          });
         },
         function (error) {
           response.error(error);
