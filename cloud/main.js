@@ -9,6 +9,8 @@ require('./authentication.js');
 require('./search.js');
 require('./admin/users.js');
 
+var async = require('async');
+
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   var user = request.object;
   var toLowerCase = function(w) { return w.toLowerCase(); };
@@ -30,6 +32,40 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   }
 });
 
+Parse.Cloud.beforeSave(Parse.Installation, function(request, response) {
+  var user = request.user;
+  var installation = request.object;
+  var installationQuery = new Parse.Query(Parse.Installation);
+  installation.equalTo('user', user);
+  installation.find().then(
+    function(foundInstallations) {
+      if(foundInstallations.length == 0) {
+        installation.set('user', user);
+      } else {
+        async.each(foundInstallations, function(singleInstallation, installationCallback) {
+          singleInstallation.destroy().then(
+            function() {
+              installationCallback();
+            },
+            function(error) {
+              response.error(error);
+            }
+          );
+        }, function(error) {
+          if(error) {
+            response.error(error);
+          } else {
+            installation.set('user', user);
+          }
+        })
+      }
+    },
+    function(error) {
+      response.error(error);
+    }
+  );
+});
+
 Parse.Cloud.afterSave('Message', function(request, response) {
   var sentTo = request.object.get("sentTo");
   sentTo.fetch().then(
@@ -38,21 +74,27 @@ Parse.Cloud.afterSave('Message', function(request, response) {
       sentBy.fetch().then(
         function(sentByFetched) {
           var pushQuery = new Parse.Query(Parse.Installation);
-          pushQuery.equalTo("username",sentToFetched.get('username'));
+          pushQuery.equalTo('user', sentToFetched);
           Parse.Push.send({
             where: pushQuery,
             data: {
               alert: "You got a message from " + sentByFetched.get('username'),
               sound: "default"
             }
-          },{
-            success: function(){
-              response.success('true');
+          },{ useMasterKey: true }).then(
+            function() {
+              response.success({
+                'message': 'SUCCESS',
+                'result': result
+              });
             },
-            error: function (error) {
-              response.error(error);
+            function(error) {
+              response.success({
+                'message': 'ERROR',
+                'result' : error.message
+              })
             }
-          }, { useMasterKey: true });
+          );
         },
         function (error) {
           response.error(error);
