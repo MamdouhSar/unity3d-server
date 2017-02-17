@@ -25,9 +25,9 @@ var api = new ParseServer({
     push: {
         ios:
           {
-            pfx: __dirname  + '/cert/FokalDevAPN.p12', // Dev PFX or P12
+            pfx: __dirname  + '/cert/FokalAPNProd.p12', // Dev PFX or P12
             bundleId: 'com.fokalinc.fokal',
-            passphrase: 'Asef123',
+            passphrase: 'aya7aga',
             production: false
           }
     },
