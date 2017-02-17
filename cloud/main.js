@@ -32,41 +32,6 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   }
 });
 
-Parse.Cloud.afterSave(Parse.User, function(request, response) {
-  var user = request.object;
-  var sessionQuery = new Parse.Query(Parse.Session);
-  sessionQuery.equalTo('user', user);
-  sessionQuery.descending('createdAt');
-  sessionQuery.first().then(
-    function(sessionFound) {
-      if(sessionFound) {
-        var installationQuery = new Parse.Query(Parse.Installation);
-        installationQuery('installationId', sessionFound.get('installationId'));
-        installationQuery.first().then(
-          function(installationFound) {
-            installationFound.set('user', user);
-            installationFound.save().then(
-              function() {
-                response.success();
-              },
-              function(error) {
-                response.error(error);
-              }
-            );
-          },
-          function(error) {
-            response.error(error);
-          }
-        );
-      }
-      response.success('No session found');
-    },
-    function(error) {
-      response.error(error);
-    }
-  );
-});
-
 Parse.Cloud.afterSave('Message', function(request, response) {
   var sentTo = request.object.get("sentTo");
   sentTo.fetch().then(
