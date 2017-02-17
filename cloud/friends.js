@@ -122,9 +122,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             friendRequest.set('isAccepted', true);
                             friendRequest.save().then(
                               function() {
-                                response.success({
-                                  'message': 'SUCCESS'
-                                });
+                                sendNotification(friendRequest.get('requestedBy'),response);
                               },
                               function(error) {
                                 response.success({
@@ -150,9 +148,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             friendRequest.set('isAccepted', true);
                             friendRequest.save().then(
                               function() {
-                                response.success({
-                                  'message': 'SUCCESS'
-                                });
+                                sendNotification(friendRequest.get('requestedBy'),response);
                               },
                               function(error) {
                                 response.success({
@@ -197,9 +193,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             friendRequest.set('isAccepted', true);
                             friendRequest.save().then(
                               function() {
-                                response.success({
-                                  'message': 'SUCCESS'
-                                });
+                                sendNotification(friendRequest.get('requestedBy'),response);
                               },
                               function(error) {
                                 response.success({
@@ -225,9 +219,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
                             friendRequest.set('isAccepted', true);
                             friendRequest.save().then(
                               function() {
-                                response.success({
-                                  'message': 'SUCCESS'
-                                });
+                                sendNotification(friendRequest.get('requestedBy'),response);
                               },
                               function(error) {
                                 response.success({
@@ -371,3 +363,28 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
     }
   );
 });
+
+function sendNotification(user, response) {
+  var pushQuery = new Parse.Query(Parse.Installation);
+  pushQuery.equalTo('user', user);
+  Parse.Push.send({
+    where: pushQuery,
+    data: {
+      alert: user.get('username') + " accepted your friend request",
+      sound: "default"
+    }
+  },{ useMasterKey: true }).then(
+    function(result) {
+      response.success({
+        'message': 'SUCCESS',
+        'result': result
+      });
+    },
+    function(error) {
+      response.success({
+        'message': 'ERROR',
+        'result' : error.message
+      })
+    }
+  );
+}
