@@ -32,40 +32,10 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   }
 });
 
-Parse.Cloud.afterSave(Parse.Session, function(request, response) {
-  var user = request.user;
-  var session = request.object;
-  session.fetch().then(
-    function(resultSession) {
-      var installationQuery = new Parse.Query(Parse.Installation);
-      installationQuery.equalTo('installationId', resultSession.get('installationId'));
-      installationQuery.first().then(
-        function(resultInstallation) {
-          if(resultInstallation) {
-            resultInstallation.set('user', user);
-            resultInstallation.save().then(
-              function(result) {
-                response.success(result);
-              },
-              function(error) {
-                response.error(error);
-              }
-            );
-          } else {
-            response.success('No Installation Record Found');
-          }
-        },
-        function(error) {
-          response.error(error);
-        }
-      );
-    },
-    function(error) {
-      response.error(error);
-    }
-  );
-
-});
+/*Parse.Cloud.afterSave(Parse.User, function(request, response) {
+  var user = request.object;
+  var installation = new Parse.Installation;
+});*/
 
 Parse.Cloud.afterSave('Message', function(request, response) {
   var sentTo = request.object.get("sentTo");
