@@ -13,7 +13,7 @@ Parse.Cloud.define('requestFriend', function(request, response) {
     friendRequestQuery.include('requestedTo');
     friendRequestQuery.first({sessionToken: user.getSessionToken()}).then(
       function(foundRequests) {
-        if(foundRequests) {
+        if(!foundRequests) {
           var friendRequest = new Parse.Object('FriendRequest');
           friendRequest.set('requestedBy', user);
           friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'_User', 'objectId': requestedUser});
