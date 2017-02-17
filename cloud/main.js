@@ -32,38 +32,39 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   }
 });
 
-Parse.Cloud.beforeSave(Parse.Installation, function(request, response) {
+Parse.Cloud.afterSave(Parse.Session, function(request, response) {
   var user = request.user;
-  var installation = request.object;
-  var installationQuery = new Parse.Query(Parse.Installation);
-  installation.equalTo('user', user);
-  installation.find().then(
-    function(foundInstallations) {
-      if(foundInstallations.length == 0) {
-        installation.set('user', user);
-      } else {
-        async.each(foundInstallations, function(singleInstallation, installationCallback) {
-          singleInstallation.destroy().then(
-            function() {
-              installationCallback();
-            },
-            function(error) {
-              response.error(error);
-            }
-          );
-        }, function(error) {
-          if(error) {
-            response.error(error);
+  var session = request.object;
+  session.fetch().then(
+    function(resultSession) {
+      var installationQuery = new Parse.Query(Parse.Installation);
+      installationQuery.equalTo('installationId', resultSession.get('installationId'));
+      installationQuery.first().then(
+        function(resultInstallation) {
+          if(resultInstallation) {
+            resultInstallation.set('user', user);
+            resultInstallation.save().then(
+              function(result) {
+                response.success(result);
+              },
+              function(error) {
+                response.error(error);
+              }
+            );
           } else {
-            installation.set('user', user);
+            response.success('No Installation Record Found');
           }
-        })
-      }
+        },
+        function(error) {
+          response.error(error);
+        }
+      );
     },
     function(error) {
       response.error(error);
     }
   );
+
 });
 
 Parse.Cloud.afterSave('Message', function(request, response) {
