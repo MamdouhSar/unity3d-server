@@ -102,7 +102,7 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
   friendRequestObject.id = friendRequestId;
   friendRequestObject.fetch({sessionToken: user.getSessionToken()}).then(
     function(friendRequest) {
-      if(friendRequest.get('isAccepted')) {
+      if(!friendRequest.get('isAccepted')) {
         var friendQuery = new Parse.Query('Friend');
         friendQuery.equalTo('user', user);
         friendQuery.first({sessionToken: user.getSessionToken()}).then(
