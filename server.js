@@ -31,7 +31,7 @@ var api = new ParseServer({
             production: true
           }
     },
-    verbose: true
+    verbose: false
 });
 
 app.use('/public', express.static('public'));
@@ -76,15 +76,17 @@ io.on('connection', function(socket){
             'conversationId': data.conversation,
             'sentBy': data.sentBy,
             'sentTo': data.sentTo,
-            'content': data.message
+            'content': data.message,
+            'isObject': data.isObject
         };
         Parse.Cloud.run('saveMessage', messageObject).then(
           function(result) {
-            console.log(JSON.stringify(result), data.conversation, data.message);
-            socket.broadcast.to(data.conversation).emit('conversation private post', {
-                message: data.message,
-                isObject: data.isObject
-            });
+            console.log(JSON.stringify(result), data.conversation, data.message, data.isObject);
+            var sendData = {
+              'message': data.message,
+              'isObject': data.isObject
+            };
+            socket.broadcast.to(data.conversation).emit('conversation private post', sendData);
           },
           function(error) {
               console.log(error);
