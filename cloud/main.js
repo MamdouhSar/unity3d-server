@@ -48,7 +48,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
               sound: "default"
             }
           },{ useMasterKey: true }).then(
-            function() {
+            function(result) {
               response.success({
                 'message': 'SUCCESS',
                 'result': result

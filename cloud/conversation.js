@@ -67,7 +67,7 @@ Parse.Cloud.define('getConversations', function(request, response) {
         messageQuery.equalTo('conversationId', singleConversation);
         messageQuery.include('sendBy');
         messageQuery.include('sentTo');
-        messageQuery.ascending('createdAt');
+        messageQuery.descending('createdAt');
         messageQuery.limit(20);
         messageQuery.find().then(
           function(messages) {
