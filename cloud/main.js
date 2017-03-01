@@ -9,6 +9,8 @@ require('./authentication.js');
 require('./search.js');
 require('./admin/users.js');
 
+var async = require('async');
+
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   var user = request.object;
   var toLowerCase = function(w) { return w.toLowerCase(); };
@@ -38,21 +40,27 @@ Parse.Cloud.afterSave('Message', function(request, response) {
       sentBy.fetch().then(
         function(sentByFetched) {
           var pushQuery = new Parse.Query(Parse.Installation);
-          pushQuery.equalTo("username",sentToFetched.get('username'));
+          pushQuery.equalTo('user', sentToFetched);
           Parse.Push.send({
             where: pushQuery,
             data: {
               alert: "You got a message from " + sentByFetched.get('username'),
               sound: "default"
             }
-          },{
-            success: function(){
-              response.success('true');
+          },{ useMasterKey: true }).then(
+            function() {
+              response.success({
+                'message': 'SUCCESS',
+                'result': result
+              });
             },
-            error: function (error) {
-              response.error(error);
+            function(error) {
+              response.success({
+                'message': 'ERROR',
+                'result' : error.message
+              })
             }
-          }, { useMasterKey: true });
+          );
         },
         function (error) {
           response.error(error);

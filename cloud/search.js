@@ -5,24 +5,24 @@ var async = require('async');
 
 Parse.Cloud.define('searchUser', function(request, response) {
   var user = request.user;
-    var searchTerm = request.params.searchTerm;
-    var emailQuery = new Parse.Query('User');
-    emailQuery.startsWith('email', searchTerm);
-    var usernameLowerQuery = new Parse.Query('User');
-    usernameLowerQuery.startsWith('usernameLower', searchTerm.toLowerCase());
-    var mainQuery = Parse.Query.or(emailQuery, usernameLowerQuery);
-    mainQuery.find({sessionToken: user.getSessionToken()})
-        .then(function(foundUsers) {
-          response.success({
-            'message': 'SUCCESS',
-            'result': foundUsers
-          });
-        },function(error) {
-          response.success({
-            'message': 'ERROR',
-            'result': error.message
-          });
-        });
+  var searchTerm = request.params.searchTerm.toLowerCase();
+  var emailQuery = new Parse.Query('User');
+  emailQuery.startsWith('email', searchTerm);
+  var usernameLowerQuery = new Parse.Query('User');
+  usernameLowerQuery.startsWith('usernameLower', searchTerm);
+  var mainQuery = Parse.Query.or(emailQuery, usernameLowerQuery);
+  mainQuery.find({sessionToken: user.getSessionToken()})
+    .then(function(foundUsers) {
+      response.success({
+        'message': 'SUCCESS',
+        'result': foundUsers
+      });
+    },function(error) {
+      response.success({
+        'message': 'ERROR',
+        'result': error.message
+      });
+    });
 });
 
 Parse.Cloud.define('searchUserLong', function(request, response) {

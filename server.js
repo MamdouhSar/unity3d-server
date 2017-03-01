@@ -25,10 +25,10 @@ var api = new ParseServer({
     push: {
         ios:
           {
-            pfx: __dirname  + '/cert/FokalDevAPN.p12', // Dev PFX or P12
-            bundleId: 'com.fokalinc.fokal',
-            passphrase: 'Asef123',
-            production: false
+            pfx: __dirname  + process.env.CERT_PATH, // Dev PFX or P12
+            bundleId: process.env.BUNDLE_ID,
+            passphrase: process.env.CERT_PASSPHRASE,
+            production: true
           }
     },
     verbose: true

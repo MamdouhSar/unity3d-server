@@ -7,53 +7,83 @@ Parse.Cloud.define('requestFriend', function(request, response) {
   var user = request.user;
   var requestedUser = request.params.id;
   if(user.id != requestedUser) {
-    var friendRequest = new Parse.Object('FriendRequest');
-    friendRequest.set('requestedBy', user);
-    friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'_User', 'objectId': requestedUser});
-    friendRequest.set('isAccepted', false);
-    friendRequest.save().then(
-      function(result) {
-        console.log("LOGGING RESULT OF FRIENDREQUESTSSS")
-        console.log(result);
-        var userObject = new Parse.User();
-        userObject.id = requestedUser;
-        userObject.fetch().then(
-          function(userFetched) {
-            var pushQuery = new Parse.Query(Parse.Installation);
-            pushQuery.equalTo('user', userFetched);
-            Parse.Push.send({
-              where: pushQuery,
-              data: {
-                alert: "You got a friend request from " + user.get('username'),
-                sound: "default"
-              }
-            },{ useMasterKey: true }).then(
-              function() {
-                response.success({
-                  'message': 'SUCCESS',
-                  'result': result
-                });
-              },
-              function(error) {
-                response.success({
-                  'message': 'ERROR',
-                  'result' : error.message
-                })
-              }
-            );
-          },
-          function(error) {
+    var friendRequestQuery = new Parse.Query('FriendRequest');
+    friendRequestQuery.equalTo('requestedBy', user);
+    friendRequestQuery.equalTo('requestedTo', {'__type':'Pointer', 'className':'_User', 'objectId': requestedUser});
+    friendRequestQuery.include('requestedTo');
+    friendRequestQuery.first({sessionToken: user.getSessionToken()}).then(
+      function(foundRequests) {
+        if(!foundRequests) {
+          var friendRequest = new Parse.Object('FriendRequest');
+          friendRequest.set('requestedBy', user);
+          friendRequest.set('requestedTo', {'__type':'Pointer', 'className':'_User', 'objectId': requestedUser});
+          friendRequest.set('isAccepted', false);
+          friendRequest.save().then(
+            function(result) {
+              var userObject = new Parse.User();
+              userObject.id = requestedUser;
+              userObject.fetch().then(
+                function(userFetched) {
+                  var pushQuery = new Parse.Query(Parse.Installation);
+                  pushQuery.equalTo('user', userFetched);
+                  Parse.Push.send({
+                    where: pushQuery,
+                    data: {
+                      alert: "You got a friend request from " + user.get('username'),
+                      sound: "default"
+                    }
+                  },{ useMasterKey: true }).then(
+                    function() {
+                      response.success({
+                        'message': 'SUCCESS',
+                        'result': result
+                      });
+                    },
+                    function(error) {
+                      response.success({
+                        'message': 'ERROR',
+                        'result' : error.message
+                      })
+                    }
+                  );
+                },
+                function(error) {
+                  response.success({
+                    'message': 'ERROR',
+                    'result' : error.message
+                  })
+                }
+              );
+            },
+            function(error) {
+              response.success({
+                'message': 'ERROR',
+                'result' : error.message
+              })
+            }
+          );
+        } else {
+          if(foundRequests.get('isAccepted')) {
             response.success({
-              'message': 'ERROR',
-              'result' : error.message
-            })
+              'message': 'Already a Friend',
+              'result': foundRequests.get('requestedTo')
+            });
+          } else {
+            response.success({
+              'message': 'Already Requested',
+              'result': {
+                'id': foundRequests.id,
+                'requestedBy': foundRequests.get('requestedTo'),
+                'isAccepted': foundRequests.get('isAccepted')
+              }
+            });
           }
-        );
+        }
       },
       function(error) {
         response.success({
           'message': 'ERROR',
-          'result' : error.message
+          'result': error.message
         })
       }
     );
@@ -65,157 +95,185 @@ Parse.Cloud.define('requestFriend', function(request, response) {
   }
 });
 
-
-//TODO: Optimize Accept Friend Function
-
 Parse.Cloud.define('acceptFriend', function(request, response) {
   var user = request.user;
-  var requestObject = new Parse.Object('FriendRequest');
-  requestObject.id = request.params.requestId;
-  requestObject.fetch().then(
-    function(requestObjectFetched) {
-      requestObjectFetched.set('isAccepted', true);
-      var requestUser = new Parse.User();
-      requestUser.id = requestObjectFetched.get('requestedBy').id;
-      requestObjectFetched.save().then(
-        function(requestSaved) {
-          var friendQuery = new Parse.Query('Friends');
-          friendQuery.equalTo('user', user);
-          friendQuery.first({sessionToken: user.getSessionToken()}).then(
-            function(friend) {
-              console.log('=====================================');
-              console.log(friend);
-              if(friend != undefined) {
-                friend.addUnique('friends', requestUser);
-                friend.save().then(
-                  function(result) {
-                    var friendQuery2 = new Parse.Query('Friends');
-                    friendQuery2.equalTo('user', requestUser);
-                    friendQuery2.first({sessionToken: user.getSessionToken()}).then(
-                      function(friend2){
-                        console.log('===================================');
-                        console.log(friend2)
-                        if(friend2 != undefined) {
-                          friend2.addUnique('friends', user);
-                          friend2.save().then(
-                            function(result2) {
-                              response.success({
-                                'message': 'SUCCESS',
-                                'result1': result,
-                                'result2': result2
-                              });
-                            }
-                          );
-                        } else {
-                          var newFriendObject = new Parse.Object('Friend');
-                          newFriendObject.set('user', requestUser);
-                          newFriendObject.addUnique('friends', user);
-                          newFriendObject.save().then(
-                            function(result2) {
-                              response.success({
-                                'message': 'SUCCESS',
-                                'result1': result,
-                                'result2': result2
-                              });
-                            },
-                            function(error) {
-                              response.success({
-                                'message': 'ERROR',
-                                'result': error.message
-                              });
-                            }
-                          );
-                        }
-                      },
-                      function(error) {
-                        response.success({
-                          'message': 'ERROR',
-                          'result': error.message
-                        });
+  var friendRequestId = request.params.requestId;
+  var friendRequestObject = new Parse.Object('FriendRequest');
+  friendRequestObject.id = friendRequestId;
+  friendRequestObject.fetch({sessionToken: user.getSessionToken()}).then(
+    function(friendRequest) {
+      if(!friendRequest.get('isAccepted')) {
+        var friendQuery = new Parse.Query('Friend');
+        friendQuery.equalTo('user', user);
+        friendQuery.first({sessionToken: user.getSessionToken()}).then(
+          function(userFriends) {
+            if(userFriends) {
+              userFriends.addUnique('friends', friendRequest.get('requestedBy'));
+              userFriends.save().then(
+                function() {
+                  var friendQuery2 = new Parse.Query('Friend');
+                  friendQuery2.equalTo('user', friendRequest.get('requestedBy'));
+                  friendQuery2.first({sessionToken: user.getSessionToken()}).then(
+                    function(requestedByFriends){
+                      if(requestedByFriends) {
+                        requestedByFriends.addUnique('friends', friendRequest.get('requestedTo'));
+                        requestedByFriends.save().then(
+                          function() {
+                            friendRequest.set('isAccepted', true);
+                            friendRequest.save().then(
+                              function() {
+                                sendNotification(friendRequest.get('requestedBy'),response);
+                              },
+                              function(error) {
+                                response.success({
+                                  'message': 'ERROR',
+                                  'result': error.message
+                                })
+                              }
+                            );
+                          },
+                          function(error) {
+                            response.success({
+                              'message': 'ERROR',
+                              'result': error.message
+                            })
+                          }
+                        );
+                      } else {
+                        var newFriendObject = new Parse.Object('Friend');
+                        newFriendObject.set('user', friendRequest.get('requestedBy'));
+                        newFriendObject.addUnique('friends', friendRequest.get('requestedTo'));
+                        newFriendObject.save().then(
+                          function() {
+                            friendRequest.set('isAccepted', true);
+                            friendRequest.save().then(
+                              function() {
+                                sendNotification(friendRequest.get('requestedBy'),response);
+                              },
+                              function(error) {
+                                response.success({
+                                  'message': 'ERROR',
+                                  'result': error.message
+                                })
+                              }
+                            );
+                          },
+                          function(error) {
+                            response.success({
+                              'message': 'ERROR',
+                              'result': error.message
+                            });
+                          }
+                        );
                       }
-                    );
-                  },
-                  function(error) {
-                    response.success({
-                      'message': 'ERROR',
-                      'result': error.message
-                    });
-                  }
-                );
-              } else {
-                var newFriendObject = new Parse.Object('Friend');
-                newFriendObject.set('user', user);
-                newFriendObject.addUnique('friends', requestUser);
-                newFriendObject.save().then(
-                  function(result) {
-                    var friendQuery2 = new Parse.Query('Friends');
-                    friendQuery2.equalTo('user', requestUser);
-                    friendQuery2.first({sessionToken: user.getSessionToken()}).then(
-                      function(friend2 ){
-                        if(friend2 != undefined) {
-                          friend2.addUnique('friends', user);
-                          friend2.save().then(
-                            function(result2) {
-                              response.success({
-                                'message': 'SUCCESS',
-                                'result1': result,
-                                'result2': result2
-                              });
-                            }
-                          );
-                        } else {
-                          var newFriendObject2 = new Parse.Object('Friend');
-                          newFriendObject2.set('user', requestUser);
-                          newFriendObject2.addUnique('friends', user);
-                          newFriendObject2.save().then(
-                            function(result2) {
-                              response.success({
-                                'message': 'SUCCESS',
-                                'result1': result,
-                                'result2': result2
-                              });
-                            },
-                            function(error) {
-                              response.success({
-                                'message': 'ERROR',
-                                'result': error.message
-                              });
-                            }
-                          );
-                        }
-                      },
-                      function(error) {
-                        response.success({
-                          'message': 'ERROR',
-                          'result': error.message
-                        });
+                    }
+                  );
+                },
+                function(error) {
+                  response.success({
+                    'message': 'ERROR',
+                    'result': error.message
+                  });
+                }
+              );
+            } else {
+              var newFriendObject2 = new Parse.Object('Friend');
+              newFriendObject2.set('user', user);
+              newFriendObject2.addUnique('friends', friendRequest.get('requestedBy'));
+              newFriendObject2.save().then(
+                function() {
+                  var friendQuery2 = new Parse.Query('Friend');
+                  friendQuery2.equalTo('user', friendRequest.get('requestedBy'));
+                  friendQuery2.first({sessionToken: user.getSessionToken()}).then(
+                    function(requestedByFriends){
+                      if(requestedByFriends) {
+                        requestedByFriends.addUnique('friends', friendRequest.get('requestedTo'));
+                        requestedByFriends.save().then(
+                          function() {
+                            friendRequest.set('isAccepted', true);
+                            friendRequest.save().then(
+                              function() {
+                                sendNotification(friendRequest.get('requestedBy'),response);
+                              },
+                              function(error) {
+                                response.success({
+                                  'message': 'ERROR',
+                                  'result': error.message
+                                })
+                              }
+                            );
+                          },
+                          function(error) {
+                            response.success({
+                              'message': 'ERROR',
+                              'result': error.message
+                            })
+                          }
+                        );
+                      } else {
+                        var newFriendObject = new Parse.Object('Friend');
+                        newFriendObject.set('user', friendRequest.get('requestedBy'));
+                        newFriendObject.addUnique('friends', friendRequest.get('requestedTo'));
+                        newFriendObject.save().then(
+                          function() {
+                            friendRequest.set('isAccepted', true);
+                            friendRequest.save().then(
+                              function() {
+                                sendNotification(friendRequest.get('requestedBy'),response);
+                              },
+                              function(error) {
+                                response.success({
+                                  'message': 'ERROR',
+                                  'result': error.message
+                                })
+                              }
+                            );
+                          },
+                          function(error) {
+                            response.success({
+                              'message': 'ERROR',
+                              'result': error.message
+                            });
+                          }
+                        );
                       }
-                    );
-                  },
-                  function(error) {
-                    response.success({
-                      'message': 'ERROR',
-                      'result': error.message
-                    });
-                  }
-                );
-              }
-            },
-            function(error) {
-              response.success({
-                'message': 'ERROR',
-                'result': error.message
-              });
+                    }
+                  );
+                },
+                function(error) {
+                  response.success({
+                    'message': 'ERROR',
+                    'result': error.message
+                  });
+                }
+              );
             }
-          );
-        },
-        function(error) {
-          response.success({
-            'message': 'ERROR',
-            'result': error.message
-          });
-        }
-      );
+          },
+          function(error) {
+            response.success({
+              'message': 'ERROR',
+              'result': error.message
+            });
+          }
+        );
+      } else {
+        var requestedToUser = new Parse.User();
+        requestedToUser.id = friendRequest.get('requestedTo').id;
+        requestedToUser.fetch({sessionToken: user.getSessionToken()}).then(
+          function(userFetched) {
+            response.success({
+              'message': 'Already a Friend',
+              'result': userFetched
+            });
+          },
+          function(error) {
+            response.success({
+              'message': 'ERROR',
+              'result': error.message
+            });
+          }
+        );
+      }
     },
     function(error) {
       response.success({
@@ -224,59 +282,6 @@ Parse.Cloud.define('acceptFriend', function(request, response) {
       });
     }
   );
-  /*var user = request.user;
-   var requestObject = new Parse.Object('FriendRequest');
-   requestObject.id = request.params.requestId;
-   requestObject.fetch().then(
-   function(req) {
-   var requestUser = req.get('requestedBy');
-   req.set('isAccepted', true);
-   req.save().then(
-   function(reqSaved) {
-   user.addUnique('friends', requestUser);
-   user.save().then(
-   function(userFriendSaved) {
-   requestUser.addUnique('friends', user);
-   requestUser.save().then(
-   function(requestedFriendSaved) {
-   response.success({
-   'message': 'SUCCESS',
-   'request': reqSaved,
-   'userAccepted': userFriendSaved,
-   'userRequested': requestedFriendSaved
-   });
-   },
-   function(error) {
-   response.success({
-   'message': 'ERROR',
-   'result': error.message
-   });
-   }
-   )
-   },
-   function(error) {
-   response.success({
-   'message': 'ERROR',
-   'result': error.message
-   });
-   }
-   );
-   },
-   function(error) {
-   response.success({
-   'message': 'ERROR',
-   'result': error.message
-   })
-   }
-   )
-   },
-   function(error) {
-   response.success({
-   'message': 'ERROR',
-   'result': error.message
-   })
-   }
-   )*/
 });
 
 Parse.Cloud.define('getAllFriends', function(request, response) {
@@ -318,30 +323,6 @@ Parse.Cloud.define('getAllFriends', function(request, response) {
       });
     }
   );
-  /*var user = request.user;
-   var friends = user.get('friends');
-   var responseFriends = [];
-   async.each(friends, function(singleFriend, friendCallback) {
-   responseFriends.push({
-   'id': singleFriend.id,
-   'username': singleFriend.get('username'),
-   'email': singleFriend.get('email')
-   });
-   friendCallback();
-   },
-   function(err) {
-   if(err) {
-   response.success({
-   'message': 'ERROR',
-   'result': err
-   });
-   } else {
-   response.success({
-   'message': 'SUCCESS',
-   'result': responseFriends
-   });
-   }
-   });*/
 });
 
 Parse.Cloud.define('getFriendRequests', function(request, response) {
@@ -382,3 +363,28 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
     }
   );
 });
+
+function sendNotification(user, response) {
+  var pushQuery = new Parse.Query(Parse.Installation);
+  pushQuery.equalTo('user', user);
+  Parse.Push.send({
+    where: pushQuery,
+    data: {
+      alert: user.get('username') + " accepted your friend request",
+      sound: "default"
+    }
+  },{ useMasterKey: true }).then(
+    function(result) {
+      response.success({
+        'message': 'SUCCESS',
+        'result': result
+      });
+    },
+    function(error) {
+      response.success({
+        'message': 'ERROR',
+        'result' : error.message
+      })
+    }
+  );
+}
