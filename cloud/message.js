@@ -35,7 +35,7 @@ Parse.Cloud.define('saveMessage', function(request, response) {
 });
 
 Parse.Cloud.define('messagesRead', function(request, response) {
-  var messageObject = new Parse.Object('Message');
+  var messageObject = new Parse.Query('Message');
   var conversationId = request.params.conversationId;
   var userId = request.params.userId;
   messageObject.equalTo('conversationId', {'__type':'Pointer', 'className':'Conversation', 'objectId': conversationId});
