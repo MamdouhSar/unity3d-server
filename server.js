@@ -82,7 +82,8 @@ io.on('connection', function(socket){
           function(result) {
             console.log(JSON.stringify(result), data.conversation, data.message);
             socket.broadcast.to(data.conversation).emit('conversation private post', {
-                message: data.message
+                message: data.message,
+                isObject: data.isObject
             });
           },
           function(error) {
