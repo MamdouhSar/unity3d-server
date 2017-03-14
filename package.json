@@ -23,6 +23,7 @@
     "lodash": "^4.17.4",
     "parse": "^1.9.2",
     "parse-server": "^2.3.3",
+    "parse-server-genericemail-adapter": "0.0.3",
     "path": "^0.12.7",
     "socket.io": "^1.7.2"
   }
