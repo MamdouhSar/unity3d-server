@@ -40,7 +40,11 @@ var api = new ParseServer({
         email: "mamdouh.alsarayreh@gmail.com",
         password: "94692a1B2"  //Hmm right now no other way
       }
-     },
+    },
+    passwordPolicy: {
+      validatorPattern: (/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/),
+      validatorCallback: function(password) {return validatePassword(password)}
+    },
     verbose: false
 });
 
