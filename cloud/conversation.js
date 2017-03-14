@@ -78,7 +78,7 @@ Parse.Cloud.define('getConversations', function(request, response) {
                   'sentBy': singleMessage.get('sentBy'),
                   'sentTo': singleMessage.get('sentBy'),
                   'content': singleMessage.get('content').message,
-                  'isObject': singleMessage.get('isMessage')
+                  'isObject': singleMessage.get('isObject')
               });
               messageCallback();
             },
