@@ -15,6 +15,8 @@ var api = new ParseServer({
     databaseURI: databaseUri || 'mongodb://localhost:27017/devUnity',
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
     appId: process.env.APP_ID || 'MyAppId',
+    appName: 'FOKAL',
+    publicServerURL: 'https://unity3d-server.herokuapp.com/',
     masterKey: process.env.MASTER_KEY || 'masterKey',
     serverURL: process.env.SERVER_URL || 'https://localhost:1335/parse',
     javascriptKey: process.env.JAVASCRIPT_KEY || '',
