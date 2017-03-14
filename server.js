@@ -62,7 +62,7 @@ function validatePassword(password) {
   }
   if (errors.length > 0) {
     alert(errors.join("\n"));
-    return false;
+    return ("Your password must contain at least one upper letter, one lower letter, and one digit");
   }
   return true;
 }
