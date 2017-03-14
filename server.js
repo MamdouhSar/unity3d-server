@@ -37,7 +37,7 @@ var api = new ParseServer({
       module: "parse-server-genericemail-adapter",
       options: {
         service: "Gmail", // Could be anything like yahoo, hotmail, etc, Full list - https://github.com/nodemailer/nodemailer-wellknown
-        email: "mamdouh.alsarayreh@.gmail.com",
+        email: "mamdouh.alsarayreh@gmail.com",
         password: "94692a1B2"  //Hmm right now no other way
       }
      },
