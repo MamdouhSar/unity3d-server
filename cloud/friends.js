@@ -374,15 +374,23 @@ Parse.Cloud.run('removeFriend', function(request, response) {
       result.remove('friends', { "__type": "Pointer", "className": "_User", "objectId": friendId });
       result.save().then(
         function() {
-          response.success('Friend Removed');
+          response.success({
+            'message': 'SUCCESS'
+          });
         },
         function(error) {
-          response.success('ERROR');
+          response.success({
+            'message': 'ERROR',
+            'result': error.message
+          });
         }
       );
     },
     function(error) {
-      response.success('ERROR');
+      response.success({
+        'message': 'ERROR',
+        'result': error.message
+      });
     }
   );
 });
