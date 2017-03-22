@@ -364,7 +364,7 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
   );
 });
 
-Parse.Cloud.run('removeFriend', function(request, response) {
+Parse.Cloud.define('removeFriend', function(request, response) {
   var user = request.user;
   var friendId = request.params.id;
   var friendQuery = new Parse.Query('Friend');
