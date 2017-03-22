@@ -364,6 +364,29 @@ Parse.Cloud.define('getFriendRequests', function(request, response) {
   );
 });
 
+Parse.Cloud.run('removeFriend', function(request, response) {
+  var user = request.user;
+  var friendId = request.params.id;
+  var friendQuery = new Parse.Query('Friend');
+  friendQuery.equalTo('user', user);
+  friendQuery.first({sessionToken: user.getSessionToken()}).then(
+    function(result) {
+      result.remove('friends', { "__type": "Pointer", "className": "_User", "objectId": friendId });
+      result.save().then(
+        function() {
+          response.success('Friend Removed');
+        },
+        function(error) {
+          response.success('ERROR');
+        }
+      );
+    },
+    function(error) {
+      response.success('ERROR');
+    }
+  );
+});
+
 function sendNotification(user, response) {
   var pushQuery = new Parse.Query(Parse.Installation);
   pushQuery.equalTo('user', user);
