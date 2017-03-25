@@ -73,7 +73,7 @@ Parse.Cloud.afterSave('Message', function(request, response) {
   );
 });
 
-Parse.Cloud.afterDelete("Post", function(request, response) {
+Parse.Cloud.afterDelete("Conversation", function(request, response) {
   var messageQuery = new Parse.Query('Message');
   messageQuery.equalTo('conversationId', request.object);
   messageQuery.limit(999999);
