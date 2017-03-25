@@ -49,6 +49,26 @@ Parse.Cloud.define('initConversation', function(request, response) {
     );
 });
 
+Parse.Cloud.define('removeConversation', function (request, response) {
+  var user = request.user;
+  var conversationId = request.params.id;
+  var conversationObject = new Parse.Object('Conversation');
+  conversationObject.id = conversationId;
+  conversationId.destroy().then(
+    function(result) {
+      response.success({
+        'result':'SUCCESS'
+      });
+    },
+    function(error) {
+      response.success({
+        'result': 'ERROR',
+        'message': error.message
+      });
+    }
+  );
+});
+
 Parse.Cloud.define('getConversations', function(request, response) {
   var user = request.user;
   var conversationQuery1 = new Parse.Query('Conversation');

@@ -72,3 +72,17 @@ Parse.Cloud.afterSave('Message', function(request, response) {
     }
   );
 });
+
+Parse.Cloud.afterDelete("Post", function(request, response) {
+  var messageQuery = new Parse.Query('Message');
+  messageQuery.equalTo('conversationId', request.object);
+  messageQuery.limit(999999);
+  messageQuery.find().then(
+    function(result) {
+      Parse.Object.destroyAll(result);
+    },
+    function(error) {
+      console.log(error.message);
+    }
+  );
+});
