@@ -54,7 +54,7 @@ Parse.Cloud.define('removeConversation', function (request, response) {
   var conversationId = request.params.id;
   var conversationObject = new Parse.Object('Conversation');
   conversationObject.id = conversationId;
-  conversationId.destroy().then(
+  conversationObject.destroy().then(
     function(result) {
       response.success({
         'result':'SUCCESS'
